@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="133" height="115"><svg xmlns="http://www.w3.org/2000/svg" width="133" height="115" viewBox="0 0 133 115" fill="none">
+  <path d="M2.5 31.8597L66.4821 6.40771L130.464 31.8597" stroke="black" stroke-width="10.908"></path>
+  <ellipse cx="40.2448" cy="79.8912" rx="24.0793" ry="29.2391" fill="#496642"></ellipse>
+  <path d="M36.8049 64.0818C36.8049 51.2714 47.1246 40.291 60.8842 40.291" stroke="black" stroke-width="10.3197" stroke-miterlimit="16" stroke-linecap="square"></path>
+  <path d="M18.6789 39.8309C16.6349 62.0577 25.4591 68.4975 32.0622 69.1791C33.655 69.3435 34.9019 68.0023 34.9922 66.4037C36.1824 45.3396 27.9616 38.4366 21.7859 37.2088C20.1791 36.8893 18.8289 38.1991 18.6789 39.8309Z" fill="black"></path>
+  <path d="M84.2346 44.5007L24.1426 101.605C33.1066 111.897 60.5804 124.21 83.9481 101.905C107.316 79.5992 93.9712 54.3414 84.2346 44.5007Z" fill="#FFA21F"></path>
+  <path d="M82.6312 46.8764C79.3715 77.5345 107.291 85.9432 124.555 86.4796C126.305 86.534 127.757 85.1724 127.808 83.422C128.662 54.0913 102.137 45.1239 85.974 44.0543C84.2792 43.9422 82.8108 45.1874 82.6312 46.8764Z" fill="black"></path>
+</svg><style>@media (prefers-color-scheme: light) { :root { filter: none; } }
+@media (prefers-color-scheme: dark) { :root { filter: none; } }
+</style></svg>
