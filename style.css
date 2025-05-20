@@ -61,6 +61,17 @@ header {
   box-sizing: border-box;
 }
 
+.language-switch {
+  position: fixed;
+  top: 15px;
+  right: 15px;
+}
+
+.language-switch-logo {
+  height: 40px;
+  border-radius: 5px;
+}
+
 .header-description {
   font-weight: 500;
   display: flex;
