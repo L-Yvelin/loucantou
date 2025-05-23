@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lou Cantou - Chambre d'hôtes</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="/style.css" />
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="shortcut icon" href="/favicon.ico" />
@@ -14,80 +14,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;900&display=fallback"
       rel="stylesheet"
-    />
-    <link
-      rel="preload"
-      href="assets/icons/arrow-left.svg"
-      as="image"
-      type="image/svg+xml"
-    />
-    <link
-      rel="preload"
-      href="assets/icons/arrow-right.svg"
-      as="image"
-      type="image/svg+xml"
-    />
-    <link
-      rel="preload"
-      href="assets/icons/arrow-top-right.svg"
-      as="image"
-      type="image/svg+xml"
-    />
-    <link
-      rel="preload"
-      href="assets/icons/key.svg"
-      as="image"
-      type="image/svg+xml"
-    />
-    <link
-      rel="preload"
-      href="assets/icons/logo_large.svg"
-      as="image"
-      type="image/svg+xml"
-    />
-    <link
-      rel="preload"
-      href="assets/icons/logo_small.svg"
-      as="image"
-      type="image/svg+xml"
-    />
-    <link
-      rel="preload"
-      href="assets/icons/olive-orange.svg"
-      as="image"
-      type="image/svg+xml"
-    />
-    <link
-      rel="preload"
-      href="assets/icons/olive.svg"
-      as="image"
-      type="image/svg+xml"
-    />
-    <link
-      rel="preload"
-      href="assets/icons/orange.svg"
-      as="image"
-      type="image/svg+xml"
-    />
-    <link
-      rel="preload"
-      href="assets/icons/radio-checked.svg"
-      as="image"
-      type="image/svg+xml"
-    />
-    <link
-      rel="preload"
-      href="assets/icons/radio-empty.svg"
-      as="image"
-      type="image/svg+xml"
-    />
-    <link
-      rel="preload"
-      href="assets/icons/sofa.svg"
-      as="image"
-      type="image/svg+xml"
     />
   </head>
 
@@ -100,16 +28,16 @@
           alt="Switch to english"
       /></a>
       <div class="main-logo">
-        <img src="assets/icons/logo_large.svg" alt="" class="logo" />
-        <h1>Chambre d'hôtes<br />Bed & Breakfast</h1>
+        <img src="/assets/icons/logo_large.svg" alt="" class="logo" />
+        <h1><span>Chambre d'hôtes</span><br /><span>Bed & Breakfast</span></h1>
       </div>
       <div class="header-buttons">
         <a href="/réserver.html" class="main-button olivier">
-          <img class="icon" src="assets/icons/key.svg" alt="" srcset="" />
+          <img class="icon" src="/assets/icons/key.svg" alt="" srcset="" />
           <span>RÉSERVER</span>
         </a>
         <a href="#olivier" class="main-button oranger">
-          <img class="icon" src="assets/icons/sofa.svg" alt="" srcset="" />
+          <img class="icon" src="/assets/icons/sofa.svg" alt="" srcset="" />
           <span>VOIR LES CHAMBRES</span>
         </a>
       </div>
@@ -126,9 +54,9 @@
           </strong>
         </p>
         <div class="language-flags">
-          <img src="assets/france.png" alt="Français" />
-          <img src="assets/germany.png" alt="Allemand" />
-          <img src="assets/england.png" alt="Anglais" />
+          <img src="/assets/france.png" alt="Français" />
+          <img src="/assets/germany.png" alt="Allemand" />
+          <img src="/assets/england.png" alt="Anglais" />
         </div>
       </div>
     </header>
@@ -136,7 +64,13 @@
     <main>
       <section class="hero-image">
         <img
-          src="assets/orange_tree.png"
+          src="/assets/photos/webp/orange_tree-800.webp"
+          srcset="
+            /assets/photos/webp/orange_tree-400.webp   400w,
+            /assets/photos/webp/orange_tree-800.webp   800w,
+            /assets/photos/webp/orange_tree-1200.webp 1200w,
+            /assets/photos/webp/orange_tree-1920.webp 1920w
+          "
           loading="eager"
           alt="Oranges sur un arbre"
         />
@@ -144,22 +78,29 @@
 
       <section class="section" id="olivier">
         <div class="title">
-          <img style="width: 30px" src="assets/icons/olive.svg" alt="" />
+          <img
+            style="width: 30px; aspect-ratio: 45/67"
+            src="/assets/icons/olive.svg"
+            alt=""
+          />
           <h2>L'olivier</h2>
           <div class="line olivier"></div>
         </div>
         <p class="room-description">
-          Constituée de deux pièces communiquantes, cette chambre familiale de
-          50m² peut accueillir de 2 à 5 personnes confortablement.<br />De
-          plain-pied, elle dispose d'une belle salle d'eau indépendante et une
-          cuisine partagée : une suite dans les salons d'apparat de la maison de
-          maître de 1825, entièrement rénovée.<br />Accès Internet
+          <span
+            >Constituée de deux pièces communiquantes, cette chambre familiale
+            de 50m² peut accueillir de 2 à 5 personnes confortablement.</span
+          ><br /><span
+            >e plain-pied, elle dispose d'une belle salle d'eau indépendante et
+            une cuisine partagée : une suite dans les salons d'apparat de la
+            maison de maître de 1825, entièrement rénovée.</span
+          ><br /><span>Accès Internet</span>
         </p>
         <div class="room-card">
           <div class="room-gallery">
             <div class="image-card">
               <img
-                src="assets/olivier/bedroom.png"
+                src="/assets/olivier/bedroom.png"
                 loading="eager"
                 alt="Chambre Olivier"
               />
@@ -170,7 +111,7 @@
             </div>
             <div class="image-card">
               <img
-                src="assets/olivier/living_room.png"
+                src="/assets/olivier/living_room.png"
                 loading="eager"
                 alt="Salon Olivier"
               />
@@ -182,7 +123,7 @@
             </div>
             <div class="image-card">
               <img
-                src="assets/olivier/inner_courtyard.png"
+                src="/assets/olivier/inner_courtyard.png"
                 loading="eager"
                 alt="Cour Olivier"
               />
@@ -193,7 +134,7 @@
             </div>
             <div class="image-card">
               <img
-                src="assets/oranger/shared_kitchen1.png"
+                src="/assets/oranger/shared_kitchen1.png"
                 loading="eager"
                 alt="Cuisine partagée dans Olivier"
               />
@@ -212,7 +153,7 @@
             RÉSERVER
             <img
               class="arrow-right"
-              src="assets/icons/arrow-right.svg"
+              src="/assets/icons/arrow-right.svg"
               alt=""
             />
           </a>
@@ -221,7 +162,11 @@
 
       <section class="section" id="oranger">
         <div class="title">
-          <img src="assets/icons/orange.svg" alt="" />
+          <img
+            src="/assets/icons/orange.svg"
+            alt=""
+            style="aspect-ratio: 35/24"
+          />
           <h2>L'oranger</h2>
           <div class="line oranger"></div>
         </div>
@@ -237,7 +182,7 @@
           <div class="room-gallery">
             <div class="image-card">
               <img
-                src="assets/oranger/bedroom.png"
+                src="/assets/oranger/bedroom.png"
                 loading="eager"
                 alt="Chambre Oranger"
               />
@@ -248,7 +193,7 @@
             </div>
             <div class="image-card">
               <img
-                src="assets/oranger/inner_courtyard.png"
+                src="/assets/oranger/inner_courtyard.png"
                 loading="eager"
                 alt="Cour Oranger"
               />
@@ -259,7 +204,7 @@
             </div>
             <div class="image-card">
               <img
-                src="assets/oranger/bathroom.png"
+                src="/assets/oranger/bathroom.png"
                 loading="eager"
                 alt="Salle de bain Oranger"
               />
@@ -271,7 +216,7 @@
             </div>
             <div class="image-card">
               <img
-                src="assets/oranger/shared_kitchen2.png"
+                src="/assets/oranger/shared_kitchen2.png"
                 loading="eager"
                 alt="Cuisine partagée Oranger"
               />
@@ -290,7 +235,7 @@
             RÉSERVER
             <img
               class="arrow-right"
-              src="assets/icons/arrow-right.svg"
+              src="/assets/icons/arrow-right.svg"
               alt=""
             />
           </a>
@@ -300,7 +245,7 @@
       <section class="hero-image">
         <img
           style="object-position: 0 20%"
-          src="assets/breakfast.png"
+          src="/assets/breakfast.png"
           alt="Petit déjeuner en terrasse"
           loading="eager"
         />

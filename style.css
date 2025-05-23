@@ -1,6 +1,6 @@
 @font-face {
   font-family: "Borel";
-  src: url("assets/fonts/Borel-Regular.otf");
+  src: url("/assets/fonts/Borel-Regular.otf");
   font-style: cursive;
 }
 
@@ -69,6 +69,7 @@ header {
 
 .language-switch-logo {
   height: 40px;
+  aspect-ratio: 800/533;
   border-radius: 5px;
 }
 
@@ -81,6 +82,15 @@ header {
   text-align: center;
 }
 
+p,
+a {
+  line-height: 28px;
+}
+
+p br {
+  line-height: unset;
+}
+
 .main-logo {
   display: flex;
   width: 544.82px;
@@ -91,12 +101,16 @@ header {
 
 .main-logo img {
   width: 100%;
+  aspect-ratio: 3 / 2;
 }
 
 .main-logo h1 {
   font-size: min(40px, 7vw);
   text-align: center;
   font-weight: 400;
+}
+.main-logo h1 span {
+  line-height: 56px;
 }
 
 .header-buttons {
@@ -108,7 +122,7 @@ header {
 
 .button,
 .main-button {
-  all: unset;
+  appearance: none;
   cursor: pointer;
   border-radius: 10px;
   text-decoration: none;
@@ -135,6 +149,11 @@ header {
   align-self: stretch;
 }
 
+.main-button .icon {
+  height: 55px;
+  aspect-ratio: 1;
+}
+
 .button:hover {
   gap: 20px;
 }
@@ -148,6 +167,8 @@ header {
 .arrow-left {
   width: 1rem;
   vertical-align: middle;
+  aspect-ratio: 25/21;
+  height: 16px;
 }
 
 .button .icon {
@@ -169,6 +190,7 @@ header {
 
 .language-flags img {
   height: 40px;
+  aspect-ratio: 61 / 40;
 }
 
 .hero-image {
@@ -237,7 +259,7 @@ header {
 
 .room-gallery img {
   border-radius: 20px;
-  aspect-ratio: 262/175;
+  aspect-ratio: 959/640;
   width: 100%;
 }
 
@@ -278,7 +300,7 @@ footer .separator {
 }
 
 .footer-contact .left .img-container {
-  background-image: url("assets/icons/logo_small.svg");
+  background-image: url("/assets/icons/logo_small.svg");
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
@@ -359,6 +381,7 @@ footer .separator {
 
 .page-indicator img {
   height: min(15vw, 100px);
+  aspect-ratio: 547 / 248;
 }
 
 .page-indicator .separator {
@@ -373,6 +396,7 @@ footer .separator {
   flex-grow: 0;
   flex-basis: max-content;
   font-weight: 400;
+  line-height: min(6vw, 40px);
 }
 
 .page-indicator .multiline {
@@ -453,7 +477,7 @@ footer .separator {
 }
 
 .room-details .room-card .content .title img {
-  width: 20px;
+  width: 30px;
 }
 
 .room-details .image,
@@ -468,12 +492,12 @@ footer .separator {
 
 #oranger .room-details .image,
 #oranger .room-details .room-card .inside-image {
-  background-image: url("assets/oranger/bedroom.png");
+  background-image: url("/assets/oranger/bedroom.png");
 }
 
 #olivier .room-details .image,
 #olivier .room-details .room-card .inside-image {
-  background-image: url("assets/olivier/bedroom.png");
+  background-image: url("/assets/olivier/bedroom.png");
 }
 
 .formulaire {
@@ -484,7 +508,7 @@ footer .separator {
 
 .formulaire .image {
   background-position: center 80%;
-  background-image: url("assets/keys.png");
+  background-image: url("/assets/keys.png");
   flex: 1;
 }
 
@@ -521,6 +545,7 @@ fieldset {
 
 .radio-button span {
   transform: translateY(15%);
+  line-height: 32px;
 }
 
 .radio-button input {
@@ -536,11 +561,11 @@ fieldset {
 }
 
 .radio-button input:checked::after {
-  content: url("assets/icons/radio-checked.svg");
+  content: url("/assets/icons/radio-checked.svg");
 }
 
 .radio-button input:not(:checked)::after {
-  content: url("assets/icons/radio-empty.svg");
+  content: url("/assets/icons/radio-empty.svg");
 }
 
 .formulaire input[type="email"],
@@ -566,6 +591,7 @@ fieldset {
 
 .mentions h2 {
   font-weight: 500;
+  line-height: 36px;
 }
 
 /* Break-points */

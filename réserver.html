@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Lou Cantou - Chambre d'hôtes</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="/style.css" />
     <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="shortcut icon" href="/favicon.ico" />
@@ -14,88 +14,16 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;900&display=fallback"
       rel="stylesheet"
     />
-
-    <link
-      rel="preload"
-      href="assets/icons/arrow-left.svg"
-      as="image"
-      type="image/svg+xml"
-    />
-    <link
-      rel="preload"
-      href="assets/icons/arrow-right.svg"
-      as="image"
-      type="image/svg+xml"
-    />
-    <link
-      rel="preload"
-      href="assets/icons/arrow-top-right.svg"
-      as="image"
-      type="image/svg+xml"
-    />
-    <link
-      rel="preload"
-      href="assets/icons/key.svg"
-      as="image"
-      type="image/svg+xml"
-    />
-    <link
-      rel="preload"
-      href="assets/icons/logo_large.svg"
-      as="image"
-      type="image/svg+xml"
-    />
-    <link
-      rel="preload"
-      href="assets/icons/logo_small.svg"
-      as="image"
-      type="image/svg+xml"
-    />
-    <link
-      rel="preload"
-      href="assets/icons/olive-orange.svg"
-      as="image"
-      type="image/svg+xml"
-    />
-    <link
-      rel="preload"
-      href="assets/icons/olive.svg"
-      as="image"
-      type="image/svg+xml"
-    />
-    <link
-      rel="preload"
-      href="assets/icons/orange.svg"
-      as="image"
-      type="image/svg+xml"
-    />
-    <link
-      rel="preload"
-      href="assets/icons/radio-checked.svg"
-      as="image"
-      type="image/svg+xml"
-    />
-    <link
-      rel="preload"
-      href="assets/icons/radio-empty.svg"
-      as="image"
-      type="image/svg+xml"
-    />
-    <link
-      rel="preload"
-      href="assets/icons/sofa.svg"
-      as="image"
-      type="image/svg+xml"
-    />
   </head>
+
   <body>
     <header>
       <div class="retourner">
         <a href="../" class="olivier button" aria-label="Retour à l'accueil">
-          <img class="arrow-left" src="assets/icons/arrow-left.svg" alt="" />
+          <img class="arrow-left" src="/assets/icons/arrow-left.svg" alt="" />
           REVENIR
         </a>
       </div>
@@ -104,7 +32,7 @@
     <main>
       <section class="section">
         <div class="page-indicator">
-          <img src="assets/icons/logo_large.svg" alt="" />
+          <img src="/assets/icons/logo_large.svg" alt="" />
           <div class="separator olivier"></div>
           <h1 class="title">réserver</h1>
         </div>
@@ -139,7 +67,11 @@
           <div class="room-card">
             <div class="content">
               <div class="title">
-                <img src="assets/icons/olive.svg" alt="" />
+                <img
+                  src="/assets/icons/olive.svg"
+                  alt=""
+                  style="width: 20px; aspect-ratio: 45/67"
+                />
                 <h2>L'olivier</h2>
                 <div class="line olivier"></div>
               </div>
@@ -163,7 +95,7 @@
               EN SAVOIR PLUS
               <img
                 class="arrow-right"
-                src="assets/icons/arrow-right.svg"
+                src="/assets/icons/arrow-right.svg"
                 alt=""
               />
             </a>
@@ -182,7 +114,11 @@
           <div class="room-card">
             <div class="content">
               <div class="title">
-                <img src="assets/icons/orange.svg" alt="" />
+                <img
+                  src="/assets/icons/orange.svg"
+                  style="aspect-ratio: 35/24"
+                  alt=""
+                />
                 <h2>L'oranger</h2>
                 <div class="line oranger"></div>
               </div>
@@ -206,7 +142,7 @@
               EN SAVOIR PLUS
               <img
                 class="arrow-right"
-                src="assets/icons/arrow-right.svg"
+                src="/assets/icons/arrow-right.svg"
                 alt=""
               />
             </a>
@@ -222,7 +158,7 @@
 
       <section id="contacter" class="section">
         <div class="page-indicator secondary">
-          <img src="assets/icons/olive-orange.svg" alt="" />
+          <img src="/assets/icons/olive-orange.svg" alt="" />
           <div class="title multiline">
             <span>Demande de renseigments</span><span>&nbsp;/ réservation</span>
           </div>
@@ -306,8 +242,9 @@
             <button type="submit" class="button">
               Envoyer
               <img
-                src="assets/icons/arrow-top-right.svg"
+                src="/assets/icons/arrow-top-right.svg"
                 alt=""
+                style="height: 14px; aspect-ratio: 1"
               />
             </button>
           </form>
@@ -318,11 +255,7 @@
     <footer>
       <div class="footer-contact">
         <div class="left">
-          <div
-            class="img-container"
-            role="img"
-            aria-label="Logo loucantou"
-          ></div>
+          <div class="img-container" role="img" aria-label=""></div>
           <nav class="links">
             <a href="/">Accueil</a>
             <a href="/réserver.html#contacter">Contacter</a>

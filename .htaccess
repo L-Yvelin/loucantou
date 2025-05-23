@@ -1,0 +1,5 @@
+Options -Indexes
+
+RewriteEngine On
+
+RewriteRule ^logs/ - [R=404,L]
