@@ -1,5 +1,6 @@
 {
   "html@lang": "en",
+  "meta[name='description']@content": "Lou Cantou B&B in Caux (Hérault): friendly accommodation, comfortable rooms, breakfast on the terrace, warm welcome, dogs accepted.",
   "title": "Lou Cantou - Bed & Breakfast",
   "header .retourner a@aria-label": "Return to home",
   "header .retourner a.text[2]": "BACK",
