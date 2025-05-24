@@ -138,6 +138,11 @@ p br {
   transition: box-shadow 0.2s, gap 0.2s, transform 0.2s;
 }
 
+.oranger.button,
+.oranger.main-button {
+  background-color: lch(50 79.52 68.4);
+}
+
 *:focus-visible {
   outline: 4px solid color-mix(in srgb, #ffa21f, #496642);
 }
