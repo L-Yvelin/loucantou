@@ -8,20 +8,6 @@ translations_dir = project_root / "translations"
 output_root = project_root
 
 
-def extract_fragments_for_tag(tag, key_base):
-    fragments = {}
-    for idx, node in enumerate(tag.contents):
-        if isinstance(node, NavigableString):
-            text = node.strip()
-            if text:
-                fragments[f"{key_base}.text[{idx}]"] = text
-        elif isinstance(node, Tag):
-            cls = "-".join(node.get("class", []))
-            fragments[f"{key_base}>{node.name}[{idx}].{cls}"] = node.get_text(
-                strip=True)
-    return fragments
-
-
 def apply_fragments_to_tag(tag, key_base, translations):
     new_contents = []
     for idx, node in enumerate(tag.contents):
@@ -50,15 +36,24 @@ def apply_translations(soup, translations):
         if "@" in selector:
             sel, attr = selector.rsplit("@", 1)
             sel = sel.strip()
-            for tag in soup.select(sel):
+            tags = soup.select(sel)
+            if not tags:
+                print(f"⚠️ Selector not found: {sel}")
+            for tag in tags:
                 tag[attr] = text
         elif re.search(r"\.text\[\d+\]$|>", selector):
             key_base = selector.rsplit(".", 1)[0]
             sel = key_base.split(">")[0]
-            for tag in soup.select(sel):
+            tags = soup.select(sel)
+            if not tags:
+                print(f"⚠️ Selector not found: {sel}")
+            for tag in tags:
                 apply_fragments_to_tag(tag, key_base, translations)
         else:
-            for tag in soup.select(selector.strip()):
+            tags = soup.select(selector.strip())
+            if not tags:
+                print(f"⚠️ Selector not found: {selector.strip()}")
+            for tag in tags:
                 tag.clear()
                 new_content = BeautifulSoup(text, "html.parser")
                 tag.append(new_content)
