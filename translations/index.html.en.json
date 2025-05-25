@@ -9,7 +9,7 @@
   "meta[property='og:locale']@content": "en_US",
   "meta[name='twitter:title']@content": "Lou Cantou - Bed & Breakfast in Caux (Hérault)",
   "meta[name='twitter:description']@content": "Friendly accommodation with terrace breakfast, warm welcome, and pets accepted.",
-  "script[type='application/ld+json']": "{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"BedAndBreakfast\",\n  \"name\": \"Lou Cantou\",\n  \"url\": \"https://loucantou.yvelin.net/en/\",\n  \"address\": {\n    \"@type\": \"PostalAddress\",\n    \"addressLocality\": \"Caux\",\n    \"addressRegion\": \"Occitanie\",\n    \"addressCountry\": \"FR\"\n  },\n  \"image\": \"https://loucantou.yvelin.net/assets/photos/webp/breakfast-800.webp\",\n  \"description\": \"Friendly guest house in Caux, Hérault. Breakfast on the terrace, dogs accepted.\"\n}",
+  "script[type='application/ld+json']": "{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"BedAndBreakfast\",\n  \"name\": \"Lou Cantou\",\n  \"url\": \"https://loucantou.yvelin.net/en/\",\n  \"address\": {\n    \"@type\": \"PostalAddress\",\n    \"addressLocality\": \"Caux\",\n    \"addressRegion\": \"Occitanie\",\n    \"addressCountry\": \"FR\"\n  },\n  \"image\": \"https://loucantou.yvelin.net/assets/photos/webp/breakfast-800.webp\",\n  \"description\": \"Friendly guest house in Caux, Hérault. Breakfast on the terrace, dogs accepted.\"\n, \"telephone\": \"+33 6 17 93 41 39\", \"priceRange\": \"€80–€95 per night, breakfast included\"\n}",
   "header .language-switch@href": "/",
   "header .language-switch-logo@alt": "Voir la page en français",
   "header h1": "<span>Guest House</span><br /><span>Bed & Breakfast</span>",
