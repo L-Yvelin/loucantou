@@ -9,3 +9,29 @@ RewriteRule ^logs/ - [R=404,L]
     ExpiresDefault "access plus 1 year"
     Header set Cache-Control "public, max-age=31536000, immutable"
 </FilesMatch>
+
+<FilesMatch "\.html$">
+    ExpiresActive On
+    ExpiresDefault "access plus 0 seconds"
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires 0
+</FilesMatch>
+
+<FilesMatch "\.(js|css)$">
+    ExpiresActive On
+    ExpiresDefault "access plus 1 week"
+    Header set Cache-Control "public, max-age=604800"
+</FilesMatch>
+
+<FilesMatch "\.webmanifest$">
+    ExpiresActive On
+    ExpiresDefault "access plus 1 week"
+    Header set Cache-Control "public, max-age=604800"
+</FilesMatch>
+
+<FilesMatch "\.(woff|woff2|ttf|otf|eot)$">
+    ExpiresActive On
+    ExpiresDefault "access plus 1 year"
+    Header set Cache-Control "public, max-age=31536000, immutable"
+</FilesMatch>
