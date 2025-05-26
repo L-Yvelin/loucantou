@@ -196,7 +196,8 @@ p br {
 
 .language-flags img {
   height: 40px;
-  aspect-ratio: 61 / 40;
+  aspect-ratio: 4 / 3;
+  border-radius: 5px;
 }
 
 .hero-image {
