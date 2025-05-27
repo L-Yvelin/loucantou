@@ -33,7 +33,7 @@ jobs:
 
       - name: Run log analyzer
         run: |
-          python analyse-traffic.py --period w --log_path loucantou-access.log
+          python analyse-traffic.py --period w --logpath loucantou-access.log
 
       - name: Commit and push results
         run: |
