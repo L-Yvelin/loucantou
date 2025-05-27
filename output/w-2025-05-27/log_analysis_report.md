@@ -39,7 +39,7 @@ datetime
 2025-05-24     14
 2025-05-25     46
 2025-05-26    118
-2025-05-27     69
+2025-05-27     42
 Name: visits, dtype: int64
 ```
 
@@ -56,15 +56,15 @@ datetime
 8      2
 9      9
 10    43
-11    32
-12     4
+11    19
+12     3
 13     7
 14    14
 15     8
-16    22
-17    14
-18    10
-19     7
+16    18
+17     7
+18     9
+19     6
 20    16
 21     7
 22    10
@@ -86,7 +86,7 @@ Name: count, dtype: int64
 ### Top Referrers
 ```
 referrer
--                                                     217
+-                                                     190
 https://loucantou.yvelin.net/                          27
 https://loucantou.yvelin.net/en/index.html              5
 http://loucantou1.free.fr/                              4
@@ -102,34 +102,34 @@ Name: count, dtype: int64
 ### Top URLs
 ```
 url
-/                                                                                                                    128
-/robots.txt                                                                                                           20
-/logs/loucantou-access.log?api_key=UneCl%C3%A9ApiPourEmp%C3%AAcherLesMalfratsDeSintriduireDansMonSiteSuperCool%21     15
-/en/index.html                                                                                                         9
-/assets/icons/olive.svg                                                                                                8
-/assets/photos/webp/breakfast-800.webp                                                                                 8
-/en/                                                                                                                   8
-/r%C3%A9server.html                                                                                                    7
-/logs/loucantou-access.log?api_key=                                                                                    7
-/index.html                                                                                                            5
+/                                         128
+/robots.txt                                20
+/en/index.html                              9
+/en/                                        8
+/assets/icons/olive.svg                     8
+/assets/photos/webp/breakfast-800.webp      8
+/r%C3%A9server.html                         7
+/index.html                                 5
+/sitemap.xml                                5
+/en/r%C3%A9server.html                      4
 Name: count, dtype: int64
 ```
 
 ### Device Distribution
 ```
 device_type
-Other               122
-Spider               72
-Mac                  42
-iPhone               11
-Moto G (4)           11
-Samsung SM-G930V      7
-K                     7
-Nexus 5X              4
-LIO-AN00              2
-Nexus 5               2
-iOS-Device            1
-Samsung SCH-I800      1
+Other               97
+Spider              72
+Mac                 40
+iPhone              11
+Moto G (4)          11
+Samsung SM-G930V     7
+K                    7
+Nexus 5X             4
+LIO-AN00             2
+Nexus 5              2
+iOS-Device           1
+Samsung SCH-I800     1
 Name: count, dtype: int64
 ```
 
@@ -138,9 +138,8 @@ Name: count, dtype: int64
 browser
 Chrome                   62
 bingbot                  34
-Edge                     33
+Edge                     32
 Chrome Mobile            27
-curl                     27
 Other                    17
 Googlebot                12
 Discordbot               10
@@ -152,13 +151,14 @@ Firefox                   5
 Safari                    4
 com/bot                   4
 MJ12bot                   4
-DuckDuckBot               2
 Chrome Mobile WebView     2
 OAI-SearchBot             2
+DuckDuckBot               2
 CFNetwork                 1
-tc-bot                    1
 Googlebot-Image           1
+tc-bot                    1
 IE                        1
+curl                      1
 Go-http-client            1
 Android                   1
 Samsung Internet          1
@@ -168,12 +168,12 @@ Name: count, dtype: int64
 ### OS Distribution
 ```
 os
-Other       110
-Windows      56
-Android      44
-Mac OS X     42
-Linux        17
-iOS          13
+Other       84
+Windows     57
+Android     44
+Mac OS X    40
+Linux       17
+iOS         13
 Name: count, dtype: int64
 ```
 
