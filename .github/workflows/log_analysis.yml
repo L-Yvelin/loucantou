@@ -64,6 +64,7 @@ jobs:
           from: Lou Cantou
           to: louisyvelin@gmail.com
           html_body: file://${{ steps.get_md.outputs.html_file }}
+          convert_markdown: true
 
       - name: Commit and push results
         env:
