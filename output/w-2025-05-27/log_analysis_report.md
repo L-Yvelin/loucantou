@@ -39,7 +39,7 @@ datetime
 2025-05-24     14
 2025-05-25     46
 2025-05-26    118
-2025-05-27     33
+2025-05-27     59
 Name: visits, dtype: int64
 ```
 
@@ -56,12 +56,13 @@ datetime
 8      2
 9      9
 10    43
-11    31
-13     5
-14    11
-15     6
-16    15
-17     3
+11    32
+12     4
+13     7
+14    14
+15     8
+16    22
+17    10
 18     7
 19     4
 20    16
@@ -74,8 +75,8 @@ Name: visits, dtype: int64
 ### Top Bots
 ```
 bot_name
-Bingbot        32
-Googlebot      11
+Bingbot        34
+Googlebot      13
 crawl           8
 GPTBot          4
 DuckDuckBot     2
@@ -85,14 +86,14 @@ Name: count, dtype: int64
 ### Top Referrers
 ```
 referrer
--                                                     184
-https://loucantou.yvelin.net/                          25
+-                                                     207
+https://loucantou.yvelin.net/                          27
 https://loucantou.yvelin.net/en/index.html              5
-https://loucantou.yvelin.net/en/r%C3%A9server.html      3
+http://loucantou1.free.fr/                              4
 https://loucantou.yvelin.net/r%C3%A9server.html         3
 https://www.google.com/                                 3
 http://google.com                                       3
-http://loucantou1.free.fr/                              3
+https://loucantou.yvelin.net/en/r%C3%A9server.html      3
 https://www.loucantou.yvelin.net/                       2
 https://wave.webaim.org/                                1
 Name: count, dtype: int64
@@ -101,53 +102,53 @@ Name: count, dtype: int64
 ### Top URLs
 ```
 url
-/                                         114
-/robots.txt                                20
-/en/                                        8
-/assets/photos/webp/breakfast-800.webp      8
-/assets/icons/olive.svg                     8
-/logs/loucantou-access.log?api_key=         7
-/en/index.html                              7
-/r%C3%A9server.html                         5
-/index.html                                 5
-/sitemap.xml                                5
+/                                                                                                                    123
+/robots.txt                                                                                                           20
+/logs/loucantou-access.log?api_key=UneCl%C3%A9ApiPourEmp%C3%AAcherLesMalfratsDeSintriduireDansMonSiteSuperCool%21     10
+/en/index.html                                                                                                         9
+/assets/icons/olive.svg                                                                                                8
+/assets/photos/webp/breakfast-800.webp                                                                                 8
+/en/                                                                                                                   8
+/r%C3%A9server.html                                                                                                    7
+/logs/loucantou-access.log?api_key=                                                                                    7
+/index.html                                                                                                            5
 Name: count, dtype: int64
 ```
 
 ### Device Distribution
 ```
 device_type
-Other               98
-Spider              68
-Mac                 38
-Moto G (4)          11
-iPhone              10
-Samsung SM-G930V     7
-Nexus 5X             4
-K                    4
-LIO-AN00             2
-Nexus 5              2
-iOS-Device           1
-Samsung SCH-I800     1
+Other               113
+Spider               72
+Mac                  42
+iPhone               11
+Moto G (4)           11
+Samsung SM-G930V      7
+K                     6
+Nexus 5X              4
+LIO-AN00              2
+Nexus 5               2
+iOS-Device            1
+Samsung SCH-I800      1
 Name: count, dtype: int64
 ```
 
 ### Browser Distribution
 ```
 browser
-Chrome                   56
-bingbot                  32
-Edge                     30
-Chrome Mobile            25
-Other                    13
-curl                     13
-Googlebot                10
+Chrome                   59
+bingbot                  34
+Edge                     33
+Chrome Mobile            27
+curl                     22
+Other                    16
+Googlebot                12
 Discordbot               10
 HeadlessChrome            9
 SiteCheckerBotCrawler     8
 Mobile Safari             7
-Edge Mobile               5
-Firefox                   4
+Edge Mobile               6
+Firefox                   5
 com/bot                   4
 MJ12bot                   4
 Safari                    4
@@ -166,12 +167,12 @@ Name: count, dtype: int64
 ### OS Distribution
 ```
 os
-Other       90
-Windows     52
-Android     39
-Mac OS X    38
-Linux       15
-iOS         12
+Other       104
+Windows      53
+Android      43
+Mac OS X     42
+Linux        17
+iOS          13
 Name: count, dtype: int64
 ```
 
