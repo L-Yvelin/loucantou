@@ -41,13 +41,13 @@ jobs:
         run: |
           python analyse-traffic.py --period w --logpath loucantou-access.log
 
-      - name: Get HTML diff file
-        id: get_html
+      - name: Get MD diff file
+        id: get_md
         run: |
           echo $(git ls-files --modified)
-          FILE=$(git ls-files --modified | grep -E '\.html"$' | head -n 1)
+          FILE=$(git ls-files --modified | grep -E '\.md$' | head -n 1)
           if [ -z "$FILE" ]; then
-            echo "No HTML file found in diff."
+            echo "No MD file found in diff."
             echo "skip=true" >> "$GITHUB_OUTPUT"
           else
             echo "html_file=$FILE" >> "$GITHUB_OUTPUT"
@@ -63,7 +63,7 @@ jobs:
           subject: Weekly Log Analysis
           from: Lou Cantou
           to: louisyvelin@gmail.com
-          html_body: file://${{ steps.get_html.outputs.html_file }}
+          html_body: file://${{ steps.get_md.outputs.html_file }}
 
       - name: Commit and push results
         env:
