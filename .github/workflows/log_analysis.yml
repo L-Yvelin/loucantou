@@ -34,8 +34,7 @@ jobs:
             echo "API_KEY is missing"
             exit 1
           fi
-          curl -G "https://loucantou.yvelin.net/logs/loucantou-access.log" \
-            --data-urlencode "api_key=$API_KEY" \
+          curl -G "https://loucantou.yvelin.net/logs/loucantou-access.log?api_key=$API_KEY" \
             -o loucantou-access.log
 
       - name: Run traffic analysis
