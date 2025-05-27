@@ -11,8 +11,6 @@ import numpy as np
 from collections import defaultdict
 import shutil
 
-# Function to create a timestamped subfolder
-
 
 def create_timestamped_subfolder(base_dir, period=None):
     now = datetime.now()
@@ -30,21 +28,22 @@ def create_timestamped_subfolder(base_dir, period=None):
     return output_dir
 
 
-# Ensure the base output directory exists
 base_output_dir = 'output'
 if not os.path.exists(base_output_dir):
     os.makedirs(base_output_dir, exist_ok=True)
 
-# Set up argument parsing
 parser = argparse.ArgumentParser(description='Analyze log files.')
 parser.add_argument('--period', type=str, choices=['w', 'm', 'y'], default='w',
                     help='Period for the cron job: w (weekly), m (monthly), y (yearly)')
+parser.add_argument('--logpath', type=str, default=None,
+                    help='Path to the log file to analyze (required)')
 args = parser.parse_args()
 
-# Create a timestamped subfolder for this run
-output_dir = create_timestamped_subfolder(base_output_dir, period=args.period)
+if not args.logpath:
+    raise ValueError(
+        "You must provide --logpath argument pointing to the log file")
 
-# Efficient log parser for large files
+output_dir = create_timestamped_subfolder(base_output_dir, period=args.period)
 
 
 def parse_log_line(line):
@@ -56,13 +55,10 @@ def parse_log_line(line):
         return None
 
     data = match.groupdict()
-    # Convert timestamp to datetime, including timezone offset
     data['datetime'] = datetime.strptime(
         data['timestamp'], '%d/%b/%Y:%H:%M:%S %z')
     data['is_bot'], data['bot_name'] = detect_bot(data['user_agent'])
     return data
-
-# Basic bot detection (can be expanded)
 
 
 def detect_bot(user_agent):
@@ -92,8 +88,6 @@ def detect_bot(user_agent):
             return True, name
     return False, None
 
-# Main logic
-
 
 def analyze_log(file_path, period='w'):
     records = []
@@ -107,7 +101,6 @@ def analyze_log(file_path, period='w'):
     if df.empty:
         return {}
 
-    # Create a timezone-aware cutoff date based on period
     now = datetime.now(pytz.UTC)
     if period == 'w':
         cutoff_date = now - timedelta(weeks=1)
@@ -178,10 +171,8 @@ def save_plot(fig, filename):
     plt.close(fig)
 
 
-results = analyze_log(
-    "/var/www/html/loucantou.yvelin.net/logs/loucantou-access.log", period=args.period)
+results = analyze_log(args.logpath, period=args.period)
 
-# Plot visits per day
 visits_per_day_df = results['visits_per_day'].reset_index()
 visits_per_day_df.columns = ['date', 'visits']
 fig, ax = plt.subplots(figsize=(12, 6))
@@ -191,7 +182,6 @@ ax.set_xlabel('Date')
 ax.set_ylabel('Visits')
 save_plot(fig, 'visits_per_day.png')
 
-# Plot visits per hour
 visits_per_hour_df = results['visits_per_hour'].reset_index()
 visits_per_hour_df.columns = ['hour', 'visits']
 fig, ax = plt.subplots(figsize=(12, 6))
@@ -201,7 +191,6 @@ ax.set_xlabel('Hour')
 ax.set_ylabel('Visits')
 save_plot(fig, 'visits_per_hour.png')
 
-# Plot top bots
 fig, ax = plt.subplots(figsize=(12, 6))
 sns.barplot(x=results['bots_per_name'].index,
             y=results['bots_per_name'].values, ax=ax)
@@ -211,25 +200,21 @@ ax.set_ylabel('Visits')
 ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
 save_plot(fig, 'top_bots.png')
 
-# Plot device distribution
 fig, ax = plt.subplots(figsize=(12, 6))
 results['device_distribution'].plot(kind='pie', autopct='%1.1f%%', ax=ax)
 ax.set_title('Device Distribution')
 save_plot(fig, 'device_distribution.png')
 
-# Plot browser distribution
 fig, ax = plt.subplots(figsize=(12, 6))
 results['browser_distribution'].plot(kind='pie', autopct='%1.1f%%', ax=ax)
 ax.set_title('Browser Distribution')
 save_plot(fig, 'browser_distribution.png')
 
-# Plot OS distribution
 fig, ax = plt.subplots(figsize=(12, 6))
 results['os_distribution'].plot(kind='pie', autopct='%1.1f%%', ax=ax)
 ax.set_title('OS Distribution')
 save_plot(fig, 'os_distribution.png')
 
-# Plot top referrers
 fig, ax = plt.subplots(figsize=(12, 6))
 sns.barplot(x=results['top_referrers'].index,
             y=results['top_referrers'].values, ax=ax)
@@ -239,7 +224,6 @@ ax.set_ylabel('Visits')
 ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
 save_plot(fig, 'top_referrers.png')
 
-# Plot top URLs
 fig, ax = plt.subplots(figsize=(12, 6))
 sns.barplot(x=results['top_urls'].index, y=results['top_urls'].values, ax=ax)
 ax.set_title('Top URLs')
@@ -248,7 +232,6 @@ ax.set_ylabel('Visits')
 ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
 save_plot(fig, 'top_urls.png')
 
-# Plot session durations
 session_durations = [duration for durations in results['session_durations'].values()
                      for duration in durations]
 fig, ax = plt.subplots(figsize=(12, 6))
@@ -257,8 +240,6 @@ ax.set_title('Session Durations (minutes)')
 ax.set_xlabel('Duration (minutes)')
 ax.set_ylabel('Frequency')
 save_plot(fig, 'session_durations.png')
-
-# Generate Markdown report
 
 
 def generate_markdown_report(results):
