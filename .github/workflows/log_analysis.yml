@@ -41,48 +41,17 @@ jobs:
         run: |
           python analyse-traffic.py --period w --logpath loucantou-access.log
 
-      - name: Get MD diff file
-        id: get_md
+      - name: Get html diff file
+        id: get_html
         run: |
           echo $(git ls-files --modified)
-          FILE=$(git ls-files --modified | grep -E '\.md$' | head -n 1)
+          FILE=$(git ls-files --modified | grep -E '\.html$' | head -n 1)
           if [ -z "$FILE" ]; then
-            echo "No MD file found in diff."
+            echo "No html file found in diff."
             echo "skip=true" >> "$GITHUB_OUTPUT"
           else
-            echo "md_file=$FILE" >> "$GITHUB_OUTPUT"
-            echo "md_dir=$(dirname $FILE)" >> "$GITHUB_OUTPUT"
+            echo "html_file=$FILE" >> "$GITHUB_OUTPUT"
           fi
-
-      - name: Convert Markdown to HTML and embed images
-        id: convert_md_to_html
-        run: |
-          python -c "
-          import markdown, base64, os, re;
-
-          md_file = '${{ steps.get_md.outputs.md_file }}'
-          md_dir = '${{ steps.get_md.outputs.md_dir }}'
-
-          with open(md_file, 'r') as f:
-            md_content = f.read();
-
-          html_content = markdown.markdown(md_content);
-
-          # Find all image tags and replace src with base64 encoded image
-          def replace_img(match):
-            img_path = match.group(1)
-            full_img_path = os.path.join(md_dir, img_path)
-            if os.path.exists(full_img_path):
-              with open(full_img_path, 'rb') as img_file:
-                img_data = img_file.read()
-                img_base64 = base64.b64encode(img_data).decode('utf-8')
-                return f'<img src=\"data:image/png;base64,{img_base64}\" alt=\"\">'
-            return match.group(0)
-
-          html_content = re.sub(r'<img src=\"(.*?)\" alt=\"\">', replace_img, html_content)
-
-          print(f'::set-output name=html_content::{html_content}');
-          "
 
       - name: Send mail
         uses: dawidd6/action-send-mail@v5
@@ -94,7 +63,7 @@ jobs:
           subject: Weekly Log Analysis
           from: Lou Cantou
           to: louisyvelin@gmail.com
-          html_body: ${{ steps.convert_md_to_html.outputs.html_content }}
+          html_body: ${{ steps.get_html.outputs.html_file }}
 
       - name: Commit and push results
         env:

@@ -10,6 +10,8 @@ import os
 import numpy as np
 from collections import defaultdict
 import shutil
+import markdown
+import base64
 
 
 def create_timestamped_subfolder(base_dir, period=None):
@@ -326,3 +328,29 @@ def generate_markdown_report(results):
 
 
 generate_markdown_report(results)
+
+
+def generate_html_report():
+    with open(os.path.join(output_dir, 'log_analysis_report.md'), 'r') as f:
+        markdown_content = f.read()
+
+    html_content = markdown.markdown(markdown_content)
+
+    def replace_img(match):
+        img_path = match.group(1)
+        full_img_path = os.path.join(output_dir, img_path)
+        if os.path.exists(full_img_path):
+            with open(full_img_path, 'rb') as img_file:
+                img_data = img_file.read()
+                img_base64 = base64.b64encode(img_data).decode('utf-8')
+                return f'<img src="data:image/png;base64,{img_base64}" alt="">'
+        return match.group(0)
+
+    html_content = re.sub(r'<img src="(.*?)" alt="">',
+                          replace_img, html_content)
+
+    with open(os.path.join(output_dir, 'log_analysis_report.html'), 'w') as f:
+        f.write(html_content)
+
+
+generate_html_report()
