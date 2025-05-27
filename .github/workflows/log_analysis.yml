@@ -5,6 +5,9 @@ on:
     - cron: "0 3 * * 1" # every Monday at 03:00 UTC
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   analyze:
     runs-on: ubuntu-latest
@@ -12,6 +15,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install Python and dependencies
         uses: actions/setup-python@v4
@@ -45,6 +50,8 @@ jobs:
           python analyse-traffic.py --period w --logpath loucantou-access.log
 
       - name: Commit and push results
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -53,5 +60,5 @@ jobs:
             echo "No changes to commit"
           else
             git commit -m "Weekly log analysis update"
-            git push
+            git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }} HEAD:main
           fi
