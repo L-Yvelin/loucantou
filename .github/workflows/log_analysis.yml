@@ -42,6 +42,29 @@ jobs:
         run: |
           python analyse-traffic.py --period w --logpath loucantou-access.log
 
+      - name: Get HTML diff file
+        id: get_html
+        run: |
+          FILE=$(git diff --name-only HEAD^ | grep -E '\.html$' | head -n 1)
+          if [ -z "$FILE" ]; then
+            echo "No HTML file found in diff."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "html_file=$FILE" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Send mail
+        uses: dawidd6/action-send-mail@v5
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.SMTP_USER }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: Weekly Log Analysis
+          from: Lou Cantou
+          to: louisyvelin@gmail.com
+          html_body: file://${{ steps.get_html.outputs.html_file }}
+
       - name: Commit and push results
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
