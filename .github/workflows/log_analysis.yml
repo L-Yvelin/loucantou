@@ -44,17 +44,13 @@ jobs:
       - name: Get html diff file
         id: get_html
         run: |
+          echo $(git ls-files --modified)
           FILE=$(git ls-files --modified | grep -E '\.html$' | head -n 1)
           if [ -z "$FILE" ]; then
             echo "No html file found in diff."
             echo "skip=true" >> "$GITHUB_OUTPUT"
           else
             echo "html_file=$FILE" >> "$GITHUB_OUTPUT"
-            CONTENT=$(cat $FILE)
-            CONTENT="${CONTENT//'%'/'%25'}"
-            CONTENT="${CONTENT//$'\n'/'%0A'}"
-            CONTENT="${CONTENT//$'\r'/'%0D'}"
-            echo "html_content=$CONTENT" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Send mail
@@ -67,7 +63,7 @@ jobs:
           subject: Weekly Log Analysis
           from: Lou Cantou
           to: louisyvelin@gmail.com
-          html_body: ${{ steps.get_html.outputs.html_content }}
+          html_body: file://${{ steps.get_html.outputs.html_file }}
 
       - name: Commit and push results
         env:
