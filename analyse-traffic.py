@@ -10,7 +10,6 @@ import numpy as np
 from collections import defaultdict
 import base64
 from io import BytesIO
-import html2text
 
 # Ensure the output directory exists
 output_dir = 'output'
@@ -241,110 +240,71 @@ ax.set_ylabel('Frequency')
 session_durations_img = plot_to_base64(fig)
 plt.close(fig)
 
-# Generate HTML report
+# Generate Markdown report
 
 
-def generate_html_report(results):
-    html_content = f"""
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log Analysis Report</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-    <div class="container mt-5">
-        <h1 class="text-center mb-4">Log Analysis Report</h1>
+def generate_markdown_report(results):
+    markdown_content = f"""
+# Log Analysis Report
 
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <h2>Visits per Day</h2>
-                <img src="data:image/png;base64,{visits_per_day_img}" class="img-fluid" alt="Visits per Day">
-            </div>
-            <div class="col-md-6">
-                <h2>Visits per Hour</h2>
-                <img src="data:image/png;base64,{visits_per_hour_img}" class="img-fluid" alt="Visits per Hour">
-            </div>
-        </div>
+## Visits per Day
+![Visits per Day](data:image/png;base64,{visits_per_day_img})
 
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <h2>Top Bots</h2>
-                <img src="data:image/png;base64,{top_bots_img}" class="img-fluid" alt="Top Bots">
-            </div>
-            <div class="col-md-6">
-                <h2>Device Distribution</h2>
-                <img src="data:image/png;base64,{device_distribution_img}" class="img-fluid" alt="Device Distribution">
-            </div>
-        </div>
+## Visits per Hour
+![Visits per Hour](data:image/png;base64,{visits_per_hour_img})
 
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <h2>Browser Distribution</h2>
-                <img src="data:image/png;base64,{browser_distribution_img}" class="img-fluid" alt="Browser Distribution">
-            </div>
-            <div class="col-md-6">
-                <h2>OS Distribution</h2>
-                <img src="data:image/png;base64,{os_distribution_img}" class="img-fluid" alt="OS Distribution">
-            </div>
-        </div>
+## Top Bots
+![Top Bots](data:image/png;base64,{top_bots_img})
 
-        <div class="row mb-4">
-            <div class="col-md-6">
-                <h2>Top Referrers</h2>
-                <img src="data:image/png;base64,{top_referrers_img}" class="img-fluid" alt="Top Referrers">
-            </div>
-            <div class="col-md-6">
-                <h2>Top URLs</h2>
-                <img src="data:image/png;base64,{top_urls_img}" class="img-fluid" alt="Top URLs">
-            </div>
-        </div>
+## Device Distribution
+![Device Distribution](data:image/png;base64,{device_distribution_img})
 
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <h2>Session Durations</h2>
-                <img src="data:image/png;base64,{session_durations_img}" class="img-fluid" alt="Session Durations">
-            </div>
-        </div>
+## Browser Distribution
+![Browser Distribution](data:image/png;base64,{browser_distribution_img})
 
-        <div class="row mb-4">
-            <div class="col-md-12">
-                <h2>Summary</h2>
-                <p><strong>Visits per Day:</strong></p>
-                <pre>{results['visits_per_day']}</pre>
-                <p><strong>Visits per Hour:</strong></p>
-                <pre>{results['visits_per_hour']}</pre>
-                <p><strong>Top Bots:</strong></p>
-                <pre>{results['bots_per_name']}</pre>
-                <p><strong>Top Referrers:</strong></p>
-                <pre>{results['top_referrers']}</pre>
-                <p><strong>Top URLs:</strong></p>
-                <pre>{results['top_urls']}</pre>
-                <p><strong>Device Distribution:</strong></p>
-                <pre>{results['device_distribution']}</pre>
-                <p><strong>Browser Distribution:</strong></p>
-                <pre>{results['browser_distribution']}</pre>
-                <p><strong>OS Distribution:</strong></p>
-                <pre>{results['os_distribution']}</pre>
-                <p><strong>Error Rates:</strong> {results['error_rates']}</p>
-            </div>
-        </div>
-    </div>
-</body>
-</html>
+## OS Distribution
+![OS Distribution](data:image/png;base64,{os_distribution_img})
+
+## Top Referrers
+![Top Referrers](data:image/png;base64,{top_referrers_img})
+
+## Top URLs
+![Top URLs](data:image/png;base64,{top_urls_img})
+
+## Session Durations
+![Session Durations](data:image/png;base64,{session_durations_img})
+
+## Summary
+
+### Visits per Day
+{results['visits_per_day']}
+
+### Visits per Hour
+{results['visits_per_hour']}
+
+### Top Bots
+{results['bots_per_name']}
+
+### Top Referrers
+{results['top_referrers']}
+
+### Top URLs
+{results['top_urls']}
+
+### Device Distribution
+{results['device_distribution']}
+
+### Browser Distribution
+{results['browser_distribution']}
+
+### OS Distribution
+{results['os_distribution']}
+
+### Error Rates
+{results['error_rates']}
     """
-    with open(os.path.join(output_dir, 'log_analysis_report.html'), 'w') as f:
-        f.write(html_content)
-
-    # Convert HTML to Markdown
-    h = html2text.HTML2Text()
-    h.ignore_links = False
-    markdown_content = h.handle(html_content)
-
     with open(os.path.join(output_dir, 'log_analysis_report.md'), 'w') as f:
         f.write(markdown_content)
 
 
-generate_html_report(results)
+generate_markdown_report(results)
