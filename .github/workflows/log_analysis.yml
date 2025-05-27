@@ -51,6 +51,9 @@ jobs:
             echo "skip=true" >> "$GITHUB_OUTPUT"
           else
             echo "html_file=$FILE" >> "$GITHUB_OUTPUT"
+            echo "html_content<<EOF" >> "$GITHUB_OUTPUT"
+            cat $FILE >> "$GITHUB_OUTPUT"
+            echo "EOF" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Send mail
@@ -63,7 +66,7 @@ jobs:
           subject: Weekly Log Analysis
           from: Lou Cantou
           to: louisyvelin@gmail.com
-          html_body: ${{ steps.get_html.outputs.html_file }}
+          html_body: ${{ steps.get_html.outputs.html_content }}
 
       - name: Commit and push results
         env:
