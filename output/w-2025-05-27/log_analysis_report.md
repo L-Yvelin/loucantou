@@ -39,7 +39,7 @@ datetime
 2025-05-24     14
 2025-05-25     46
 2025-05-26    118
-2025-05-27     42
+2025-05-27     43
 Name: visits, dtype: int64
 ```
 
@@ -64,7 +64,7 @@ datetime
 16    18
 17     7
 18     9
-19     6
+19     7
 20    16
 21     7
 22    10
@@ -86,7 +86,7 @@ Name: count, dtype: int64
 ### Top Referrers
 ```
 referrer
--                                                     190
+-                                                     191
 https://loucantou.yvelin.net/                          27
 https://loucantou.yvelin.net/en/index.html              5
 http://loucantou1.free.fr/                              4
@@ -102,7 +102,7 @@ Name: count, dtype: int64
 ### Top URLs
 ```
 url
-/                                         128
+/                                         129
 /robots.txt                                20
 /en/index.html                              9
 /en/                                        8
@@ -118,7 +118,7 @@ Name: count, dtype: int64
 ### Device Distribution
 ```
 device_type
-Other               97
+Other               98
 Spider              72
 Mac                 40
 iPhone              11
@@ -140,7 +140,7 @@ Chrome                   62
 bingbot                  34
 Edge                     32
 Chrome Mobile            27
-Other                    17
+Other                    18
 Googlebot                12
 Discordbot               10
 HeadlessChrome            9
@@ -168,7 +168,7 @@ Name: count, dtype: int64
 ### OS Distribution
 ```
 os
-Other       84
+Other       85
 Windows     57
 Android     44
 Mac OS X    40
