@@ -31,6 +31,11 @@ jobs:
             --data-urlencode "api_key=$API_KEY" \
             -o loucantou-access.log
 
+      - name: Check log file content
+        run: |
+          wc -l loucantou-access.log
+          head -10 loucantou-access.log
+
       - name: Run log analyzer
         run: |
           python analyse-traffic.py --period w --logpath loucantou-access.log
