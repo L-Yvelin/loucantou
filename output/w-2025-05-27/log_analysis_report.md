@@ -39,7 +39,7 @@ datetime
 2025-05-24     14
 2025-05-25     46
 2025-05-26    118
-2025-05-27     60
+2025-05-27     66
 Name: visits, dtype: int64
 ```
 
@@ -62,8 +62,8 @@ datetime
 14    14
 15     8
 16    22
-17    11
-18     7
+17    14
+18    10
 19     4
 20    16
 21     7
@@ -86,7 +86,7 @@ Name: count, dtype: int64
 ### Top Referrers
 ```
 referrer
--                                                     208
+-                                                     214
 https://loucantou.yvelin.net/                          27
 https://loucantou.yvelin.net/en/index.html              5
 http://loucantou1.free.fr/                              4
@@ -102,9 +102,9 @@ Name: count, dtype: int64
 ### Top URLs
 ```
 url
-/                                                                                                                    123
+/                                                                                                                    127
 /robots.txt                                                                                                           20
-/logs/loucantou-access.log?api_key=UneCl%C3%A9ApiPourEmp%C3%AAcherLesMalfratsDeSintriduireDansMonSiteSuperCool%21     11
+/logs/loucantou-access.log?api_key=UneCl%C3%A9ApiPourEmp%C3%AAcherLesMalfratsDeSintriduireDansMonSiteSuperCool%21     13
 /en/index.html                                                                                                         9
 /assets/icons/olive.svg                                                                                                8
 /assets/photos/webp/breakfast-800.webp                                                                                 8
@@ -118,13 +118,13 @@ Name: count, dtype: int64
 ### Device Distribution
 ```
 device_type
-Other               114
+Other               119
 Spider               72
 Mac                  42
 iPhone               11
 Moto G (4)           11
 Samsung SM-G930V      7
-K                     6
+K                     7
 Nexus 5X              4
 LIO-AN00              2
 Nexus 5               2
@@ -136,12 +136,12 @@ Name: count, dtype: int64
 ### Browser Distribution
 ```
 browser
-Chrome                   59
+Chrome                   61
 bingbot                  34
 Edge                     33
 Chrome Mobile            27
-curl                     23
-Other                    16
+curl                     25
+Other                    17
 Googlebot                12
 Discordbot               10
 HeadlessChrome            9
@@ -149,27 +149,28 @@ SiteCheckerBotCrawler     8
 Mobile Safari             7
 Edge Mobile               6
 Firefox                   5
+Safari                    4
 com/bot                   4
 MJ12bot                   4
-Safari                    4
+DuckDuckBot               2
 Chrome Mobile WebView     2
 OAI-SearchBot             2
-DuckDuckBot               2
 CFNetwork                 1
-Googlebot-Image           1
 tc-bot                    1
+Googlebot-Image           1
 IE                        1
 Go-http-client            1
 Android                   1
+Samsung Internet          1
 Name: count, dtype: int64
 ```
 
 ### OS Distribution
 ```
 os
-Other       105
-Windows      53
-Android      43
+Other       108
+Windows      55
+Android      44
 Mac OS X     42
 Linux        17
 iOS          13
