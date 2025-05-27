@@ -8,16 +8,15 @@ from user_agents import parse
 import os
 import numpy as np
 from collections import defaultdict
-import base64
-from io import BytesIO
+import shutil
 
-# Ensure the output directory exists
+# Ensure the output directory exists and is empty
 output_dir = 'output'
+if os.path.exists(output_dir):
+    shutil.rmtree(output_dir)
 os.makedirs(output_dir, exist_ok=True)
 
 # Efficient log parser for large files
-
-
 def parse_log_line(line):
     match = re.match(
         r'(?P<ip>\d+\.\d+\.\d+\.\d+) - - \[(?P<timestamp>.*?)\] "(?:GET|POST) (?P<url>\S+) HTTP/\d\.\d" \d+ \d+ "(?P<referrer>.*?)" "(?P<user_agent>.*?)"',
@@ -34,8 +33,6 @@ def parse_log_line(line):
     return data
 
 # Basic bot detection (can be expanded)
-
-
 def detect_bot(user_agent):
     bot_signatures = {
         'Googlebot': 'Googlebot',
@@ -64,8 +61,6 @@ def detect_bot(user_agent):
     return False, None
 
 # Main logic
-
-
 def analyze_log(file_path, max_lines=None, months=None):
     records = []
     with open(file_path, 'r', encoding='utf-8') as f:
@@ -134,7 +129,6 @@ def analyze_log(file_path, max_lines=None, months=None):
         'error_rates': error_rates
     }
 
-
 def enrich_user_agent(df):
     df['device_type'] = df['user_agent'].apply(
         lambda ua: parse(ua).device.family)
@@ -142,13 +136,9 @@ def enrich_user_agent(df):
     df['os'] = df['user_agent'].apply(lambda ua: parse(ua).os.family)
     return df
 
-
-def plot_to_base64(fig):
-    buf = BytesIO()
-    fig.savefig(buf, format="png")
-    buf.seek(0)
-    return base64.b64encode(buf.read()).decode("utf-8")
-
+def save_plot(fig, filename):
+    fig.savefig(os.path.join(output_dir, filename))
+    plt.close(fig)
 
 # Example usage with filtering for the past 3 months
 results = analyze_log(
@@ -162,8 +152,7 @@ sns.lineplot(data=visits_per_day_df, x='date', y='visits', ax=ax)
 ax.set_title('Visits per Day')
 ax.set_xlabel('Date')
 ax.set_ylabel('Visits')
-visits_per_day_img = plot_to_base64(fig)
-plt.close(fig)
+save_plot(fig, 'visits_per_day.png')
 
 # Plot visits per hour
 visits_per_hour_df = results['visits_per_hour'].reset_index()
@@ -173,8 +162,7 @@ sns.lineplot(data=visits_per_hour_df, x='hour', y='visits', ax=ax)
 ax.set_title('Visits per Hour')
 ax.set_xlabel('Hour')
 ax.set_ylabel('Visits')
-visits_per_hour_img = plot_to_base64(fig)
-plt.close(fig)
+save_plot(fig, 'visits_per_hour.png')
 
 # Plot top bots
 fig, ax = plt.subplots(figsize=(12, 6))
@@ -184,29 +172,25 @@ ax.set_title('Top Bots')
 ax.set_xlabel('Bot Name')
 ax.set_ylabel('Visits')
 ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
-top_bots_img = plot_to_base64(fig)
-plt.close(fig)
+save_plot(fig, 'top_bots.png')
 
 # Plot device distribution
 fig, ax = plt.subplots(figsize=(12, 6))
 results['device_distribution'].plot(kind='pie', autopct='%1.1f%%', ax=ax)
 ax.set_title('Device Distribution')
-device_distribution_img = plot_to_base64(fig)
-plt.close(fig)
+save_plot(fig, 'device_distribution.png')
 
 # Plot browser distribution
 fig, ax = plt.subplots(figsize=(12, 6))
 results['browser_distribution'].plot(kind='pie', autopct='%1.1f%%', ax=ax)
 ax.set_title('Browser Distribution')
-browser_distribution_img = plot_to_base64(fig)
-plt.close(fig)
+save_plot(fig, 'browser_distribution.png')
 
 # Plot OS distribution
 fig, ax = plt.subplots(figsize=(12, 6))
 results['os_distribution'].plot(kind='pie', autopct='%1.1f%%', ax=ax)
 ax.set_title('OS Distribution')
-os_distribution_img = plot_to_base64(fig)
-plt.close(fig)
+save_plot(fig, 'os_distribution.png')
 
 # Plot top referrers
 fig, ax = plt.subplots(figsize=(12, 6))
@@ -216,8 +200,7 @@ ax.set_title('Top Referrers')
 ax.set_xlabel('Referrer')
 ax.set_ylabel('Visits')
 ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
-top_referrers_img = plot_to_base64(fig)
-plt.close(fig)
+save_plot(fig, 'top_referrers.png')
 
 # Plot top URLs
 fig, ax = plt.subplots(figsize=(12, 6))
@@ -226,8 +209,7 @@ ax.set_title('Top URLs')
 ax.set_xlabel('URL')
 ax.set_ylabel('Visits')
 ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
-top_urls_img = plot_to_base64(fig)
-plt.close(fig)
+save_plot(fig, 'top_urls.png')
 
 # Plot session durations
 session_durations = [duration for durations in results['session_durations'].values()
@@ -237,74 +219,88 @@ sns.histplot(session_durations, bins=30, ax=ax)
 ax.set_title('Session Durations (minutes)')
 ax.set_xlabel('Duration (minutes)')
 ax.set_ylabel('Frequency')
-session_durations_img = plot_to_base64(fig)
-plt.close(fig)
+save_plot(fig, 'session_durations.png')
 
 # Generate Markdown report
-
-
 def generate_markdown_report(results):
     markdown_content = f"""
 # Log Analysis Report
 
 ## Visits per Day
-![Visits per Day](data:image/png;base64,{visits_per_day_img})
+![Visits per Day](./visits_per_day.png)
 
 ## Visits per Hour
-![Visits per Hour](data:image/png;base64,{visits_per_hour_img})
+![Visits per Hour](./visits_per_hour.png)
 
 ## Top Bots
-![Top Bots](data:image/png;base64,{top_bots_img})
+![Top Bots](./top_bots.png)
 
 ## Device Distribution
-![Device Distribution](data:image/png;base64,{device_distribution_img})
+![Device Distribution](./device_distribution.png)
 
 ## Browser Distribution
-![Browser Distribution](data:image/png;base64,{browser_distribution_img})
+![Browser Distribution](./browser_distribution.png)
 
 ## OS Distribution
-![OS Distribution](data:image/png;base64,{os_distribution_img})
+![OS Distribution](./os_distribution.png)
 
 ## Top Referrers
-![Top Referrers](data:image/png;base64,{top_referrers_img})
+![Top Referrers](./top_referrers.png)
 
 ## Top URLs
-![Top URLs](data:image/png;base64,{top_urls_img})
+![Top URLs](./top_urls.png)
 
 ## Session Durations
-![Session Durations](data:image/png;base64,{session_durations_img})
+![Session Durations](./session_durations.png)
 
 ## Summary
 
 ### Visits per Day
+```
 {results['visits_per_day']}
+```
 
 ### Visits per Hour
+```
 {results['visits_per_hour']}
+```
 
 ### Top Bots
+```
 {results['bots_per_name']}
+```
 
 ### Top Referrers
+```
 {results['top_referrers']}
+```
 
 ### Top URLs
+```
 {results['top_urls']}
+```
 
 ### Device Distribution
+```
 {results['device_distribution']}
+```
 
 ### Browser Distribution
+```
 {results['browser_distribution']}
+```
 
 ### OS Distribution
+```
 {results['os_distribution']}
+```
 
 ### Error Rates
+```
 {results['error_rates']}
+```
     """
     with open(os.path.join(output_dir, 'log_analysis_report.md'), 'w') as f:
         f.write(markdown_content)
-
 
 generate_markdown_report(results)
