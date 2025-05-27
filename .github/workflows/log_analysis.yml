@@ -51,20 +51,18 @@ jobs:
             echo "skip=true" >> "$GITHUB_OUTPUT"
           else
             echo "md_file=$FILE" >> "$GITHUB_OUTPUT"
-            echo "md_content=$(cat $FILE)" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Convert Markdown to HTML
         id: convert_md_to_html
         run: |
           python -c "
-          import markdown, os;
-          md_content = os.environ['MD_CONTENT'];
+          import markdown;
+          with open('${{ steps.get_md.outputs.md_file }}', 'r') as f:
+            md_content = f.read();
           html_content = markdown.markdown(md_content);
           print(f'::set-output name=html_content::{html_content}');
           "
-        env:
-          MD_CONTENT: ${{ steps.get_md.outputs.md_content }}
 
       - name: Send mail
         uses: dawidd6/action-send-mail@v5
