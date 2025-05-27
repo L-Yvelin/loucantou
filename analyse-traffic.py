@@ -10,6 +10,7 @@ import numpy as np
 from collections import defaultdict
 import base64
 from io import BytesIO
+import html2text
 
 # Ensure the output directory exists
 output_dir = 'output'
@@ -336,6 +337,14 @@ def generate_html_report(results):
     """
     with open(os.path.join(output_dir, 'log_analysis_report.html'), 'w') as f:
         f.write(html_content)
+
+    # Convert HTML to Markdown
+    h = html2text.HTML2Text()
+    h.ignore_links = False
+    markdown_content = h.handle(html_content)
+
+    with open(os.path.join(output_dir, 'log_analysis_report.md'), 'w') as f:
+        f.write(markdown_content)
 
 
 generate_html_report(results)
