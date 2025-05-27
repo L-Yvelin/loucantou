@@ -1,9 +1,5 @@
 Options -Indexes
 
-RewriteEngine On
-
-RewriteRule ^logs/ - [R=404,L]
-
 <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico)$">
     ExpiresActive On
     ExpiresDefault "access plus 1 year"

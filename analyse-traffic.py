@@ -1,3 +1,4 @@
+import argparse
 import pytz
 import re
 import pandas as pd
@@ -10,13 +11,42 @@ import numpy as np
 from collections import defaultdict
 import shutil
 
-# Ensure the output directory exists and is empty
-output_dir = 'output'
-if os.path.exists(output_dir):
-    shutil.rmtree(output_dir)
-os.makedirs(output_dir, exist_ok=True)
+# Function to create a timestamped subfolder
+
+
+def create_timestamped_subfolder(base_dir, period=None):
+    now = datetime.now()
+    if period == 'w':
+        folder_name = f"w-{now.strftime('%Y-%m-%d')}"
+    elif period == 'm':
+        folder_name = f"m-{now.strftime('%Y-%m')}"
+    elif period == 'y':
+        folder_name = f"y-{now.strftime('%Y')}"
+    else:
+        folder_name = now.strftime('%Y-%m-%d')
+
+    output_dir = os.path.join(base_dir, folder_name)
+    os.makedirs(output_dir, exist_ok=True)
+    return output_dir
+
+
+# Ensure the base output directory exists
+base_output_dir = 'output'
+if not os.path.exists(base_output_dir):
+    os.makedirs(base_output_dir, exist_ok=True)
+
+# Set up argument parsing
+parser = argparse.ArgumentParser(description='Analyze log files.')
+parser.add_argument('--period', type=str, choices=['w', 'm', 'y'], default='w',
+                    help='Period for the cron job: w (weekly), m (monthly), y (yearly)')
+args = parser.parse_args()
+
+# Create a timestamped subfolder for this run
+output_dir = create_timestamped_subfolder(base_output_dir, period=args.period)
 
 # Efficient log parser for large files
+
+
 def parse_log_line(line):
     match = re.match(
         r'(?P<ip>\d+\.\d+\.\d+\.\d+) - - \[(?P<timestamp>.*?)\] "(?:GET|POST) (?P<url>\S+) HTTP/\d\.\d" \d+ \d+ "(?P<referrer>.*?)" "(?P<user_agent>.*?)"',
@@ -33,6 +63,8 @@ def parse_log_line(line):
     return data
 
 # Basic bot detection (can be expanded)
+
+
 def detect_bot(user_agent):
     bot_signatures = {
         'Googlebot': 'Googlebot',
@@ -61,33 +93,38 @@ def detect_bot(user_agent):
     return False, None
 
 # Main logic
-def analyze_log(file_path, max_lines=None, months=None):
+
+
+def analyze_log(file_path, period='w'):
     records = []
     with open(file_path, 'r', encoding='utf-8') as f:
-        for i, line in enumerate(f):
-            if max_lines and i >= max_lines:
-                break
+        for line in f:
             parsed = parse_log_line(line)
             if parsed:
                 records.append(parsed)
 
     df = pd.DataFrame(records)
+    if df.empty:
+        return {}
 
-    # Filter for the past X months if specified
-    if months is not None:
-        # Create a timezone-aware cutoff date
-        cutoff_date = datetime.now(pytz.UTC) - timedelta(days=30 * months)
-        df = df[df['datetime'] >= cutoff_date]
+    # Create a timezone-aware cutoff date based on period
+    now = datetime.now(pytz.UTC)
+    if period == 'w':
+        cutoff_date = now - timedelta(weeks=1)
+    elif period == 'm':
+        cutoff_date = now - timedelta(days=30)
+    elif period == 'y':
+        cutoff_date = now - timedelta(days=365)
+    else:
+        raise ValueError("Invalid period. Must be one of 'w', 'm', or 'y'.")
 
-    # Enrich data with user agent details
+    df = df[df['datetime'] >= cutoff_date]
+
     df = enrich_user_agent(df)
-
-    # Group by IP and time window to count unique visits
     df['visit_id'] = df['ip'].astype(
         str) + df['datetime'].dt.floor('1H').astype(str)
     unique_visits = df.drop_duplicates(subset=['visit_id'])
 
-    # Summary
     visits_per_day = unique_visits.groupby(
         unique_visits['datetime'].dt.date).size().rename('visits')
     visits_per_hour = unique_visits.groupby(
@@ -102,14 +139,12 @@ def analyze_log(file_path, max_lines=None, months=None):
     browser_distribution = unique_visits['browser'].value_counts()
     os_distribution = unique_visits['os'].value_counts()
 
-    # Session duration analysis
     session_durations = defaultdict(list)
     for ip, group in unique_visits.groupby('ip'):
         group = group.sort_values('datetime')
         durations = group['datetime'].diff().dt.total_seconds() / 60
         session_durations[ip].extend(durations.dropna().tolist())
 
-    # Error rate analysis (assuming error codes are logged)
     error_rates = unique_visits['url'].apply(
         lambda x: 1 if '404' in x or '500' in x else 0).sum()
 
@@ -129,6 +164,7 @@ def analyze_log(file_path, max_lines=None, months=None):
         'error_rates': error_rates
     }
 
+
 def enrich_user_agent(df):
     df['device_type'] = df['user_agent'].apply(
         lambda ua: parse(ua).device.family)
@@ -136,13 +172,14 @@ def enrich_user_agent(df):
     df['os'] = df['user_agent'].apply(lambda ua: parse(ua).os.family)
     return df
 
+
 def save_plot(fig, filename):
     fig.savefig(os.path.join(output_dir, filename))
     plt.close(fig)
 
-# Example usage with filtering for the past 3 months
+
 results = analyze_log(
-    "/var/www/html/loucantou.yvelin.net/logs/loucantou-access.log", max_lines=50000000, months=3)
+    "/var/www/html/loucantou.yvelin.net/logs/loucantou-access.log", period=args.period)
 
 # Plot visits per day
 visits_per_day_df = results['visits_per_day'].reset_index()
@@ -222,6 +259,8 @@ ax.set_ylabel('Frequency')
 save_plot(fig, 'session_durations.png')
 
 # Generate Markdown report
+
+
 def generate_markdown_report(results):
     markdown_content = f"""
 # Log Analysis Report
@@ -299,8 +338,10 @@ def generate_markdown_report(results):
 ```
 {results['error_rates']}
 ```
-    """
+
+"""
     with open(os.path.join(output_dir, 'log_analysis_report.md'), 'w') as f:
         f.write(markdown_content)
+
 
 generate_markdown_report(results)

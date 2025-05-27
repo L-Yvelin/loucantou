@@ -1,0 +1,48 @@
+name: Weekly Log Analysis
+
+on:
+  schedule:
+    - cron: "0 3 * * 1" # every Monday at 03:00 UTC
+  workflow_dispatch:
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Install Python and dependencies
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install requirements
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas matplotlib seaborn user-agents pytz
+
+      - name: Fetch log file
+        env:
+          API_KEY: ${{ secrets.LOG_API_KEY }}
+        run: |
+          curl -G "https://loucantou.yvelin.net/logs/loucantou-access.log" \
+            --data-urlencode "api_key=$API_KEY" \
+            -o loucantou-access.log
+
+      - name: Run log analyzer
+        run: |
+          python log_analyzer.py --period w
+
+      - name: Commit and push results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add output/
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Weekly log analysis update"
+            git push
+          fi
