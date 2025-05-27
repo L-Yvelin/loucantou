@@ -23,22 +23,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install pandas matplotlib seaborn user-agents pytz
 
-      - name: Check API key length and first few characters
-        env:
-          API_KEY: ${{ secrets.LOG_API_KEY }}
-        run: |
-          echo "API key : ${API_KEY}"
-
       - name: Fetch log file
         env:
           API_KEY: ${{ secrets.LOG_API_KEY }}
         run: |
           curl "https://loucantou.yvelin.net/logs/loucantou-access.log?api_key=$API_KEY" -o loucantou-access.log
-
-      - name: Check log file content
-        run: |
-          wc -l loucantou-access.log
-          head -10 loucantou-access.log
 
       - name: Run log analyzer
         run: |
