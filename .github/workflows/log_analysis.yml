@@ -44,7 +44,7 @@ jobs:
       - name: Get HTML diff file
         id: get_html
         run: |
-          echo $(git ls-files)
+          echo $(git ls-files --modified)
           FILE=$(git ls-files --modified | grep -E '\.html"$' | head -n 1)
           if [ -z "$FILE" ]; then
             echo "No HTML file found in diff."
