@@ -39,7 +39,7 @@ datetime
 2025-05-24     14
 2025-05-25     46
 2025-05-26    118
-2025-05-27     18
+2025-05-27     33
 Name: visits, dtype: int64
 ```
 
@@ -55,8 +55,8 @@ datetime
 7      1
 8      2
 9      9
-10    42
-11    17
+10    43
+11    31
 13     5
 14    11
 15     6
@@ -73,100 +73,106 @@ Name: visits, dtype: int64
 
 ### Top Bots
 ```
+bot_name
 Bingbot        32
 Googlebot      11
 crawl           8
 GPTBot          4
 DuckDuckBot     2
-Name: bot_name, dtype: int64
+Name: count, dtype: int64
 ```
 
 ### Top Referrers
 ```
--                                                     169
+referrer
+-                                                     184
 https://loucantou.yvelin.net/                          25
 https://loucantou.yvelin.net/en/index.html              5
 https://loucantou.yvelin.net/en/r%C3%A9server.html      3
-http://loucantou1.free.fr/                              3
-http://google.com                                       3
 https://loucantou.yvelin.net/r%C3%A9server.html         3
 https://www.google.com/                                 3
+http://google.com                                       3
+http://loucantou1.free.fr/                              3
 https://www.loucantou.yvelin.net/                       2
-http://loucantou.yvelin.net                             1
-Name: referrer, dtype: int64
+https://wave.webaim.org/                                1
+Name: count, dtype: int64
 ```
 
 ### Top URLs
 ```
+url
 /                                         114
-/robots.txt                                19
+/robots.txt                                20
 /en/                                        8
-/assets/icons/olive.svg                     8
 /assets/photos/webp/breakfast-800.webp      8
+/assets/icons/olive.svg                     8
+/logs/loucantou-access.log?api_key=         7
 /en/index.html                              7
+/r%C3%A9server.html                         5
 /index.html                                 5
 /sitemap.xml                                5
-/r%C3%A9server.html                         5
-/en/r%C3%A9server.html                      4
-Name: url, dtype: int64
+Name: count, dtype: int64
 ```
 
 ### Device Distribution
 ```
-Other               86
-Spider              67
-Mac                 36
+device_type
+Other               98
+Spider              68
+Mac                 38
 Moto G (4)          11
 iPhone              10
 Samsung SM-G930V     7
-K                    4
 Nexus 5X             4
+K                    4
 LIO-AN00             2
 Nexus 5              2
 iOS-Device           1
 Samsung SCH-I800     1
-Name: device_type, dtype: int64
+Name: count, dtype: int64
 ```
 
 ### Browser Distribution
 ```
+browser
 Chrome                   56
 bingbot                  32
-Edge                     28
+Edge                     30
 Chrome Mobile            25
 Other                    13
-Discordbot               10
+curl                     13
 Googlebot                10
+Discordbot               10
 HeadlessChrome            9
 SiteCheckerBotCrawler     8
 Mobile Safari             7
 Edge Mobile               5
 Firefox                   4
 com/bot                   4
+MJ12bot                   4
 Safari                    4
-MJ12bot                   3
 Chrome Mobile WebView     2
-DuckDuckBot               2
 OAI-SearchBot             2
+DuckDuckBot               2
+CFNetwork                 1
 Googlebot-Image           1
 tc-bot                    1
 IE                        1
-CFNetwork                 1
-curl                      1
 Go-http-client            1
 Android                   1
-Name: browser, dtype: int64
+Name: count, dtype: int64
 ```
 
 ### OS Distribution
 ```
-Other       77
+os
+Other       90
 Windows     52
 Android     39
-Mac OS X    36
+Mac OS X    38
 Linux       15
 iOS         12
-Name: os, dtype: int64
+Name: count, dtype: int64
 ```
 
 ### Error Rates
