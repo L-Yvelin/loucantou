@@ -33,7 +33,7 @@ jobs:
 
       - name: Run log analyzer
         run: |
-          python log_analyzer.py --period w
+          python analyse-traffic.py --period w
 
       - name: Commit and push results
         run: |
