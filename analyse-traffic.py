@@ -283,44 +283,28 @@ def generate_markdown_report(results):
 ## Summary
 
 ### Visits per Day
-```
-{results['visits_per_day']}
-```
+{results['visits_per_day'].to_frame().to_markdown()}
 
 ### Visits per Hour
-```
-{results['visits_per_hour']}
-```
+{results['visits_per_hour'].to_frame().to_markdown()}
 
 ### Top Bots
-```
-{results['bots_per_name']}
-```
+{results['bots_per_name'].to_frame().to_markdown()}
 
 ### Top Referrers
-```
-{results['top_referrers']}
-```
+{results['top_referrers'].to_frame().to_markdown()}
 
 ### Top URLs
-```
-{results['top_urls']}
-```
+{results['top_urls'].to_frame().to_markdown()}
 
 ### Device Distribution
-```
-{results['device_distribution']}
-```
+{results['device_distribution'].to_frame().to_markdown()}
 
 ### Browser Distribution
-```
-{results['browser_distribution']}
-```
+{results['browser_distribution'].to_frame().to_markdown()}
 
 ### OS Distribution
-```
-{results['os_distribution']}
-```
+{results['os_distribution'].to_frame().to_markdown()}
 
 ### Error Rates
 ```
@@ -337,15 +321,11 @@ generate_markdown_report(results)
 
 class InlineImageProcessor(Treeprocessor):
     def run(self, root):
+        base_url = f"https://raw.githubusercontent.com/L-Yvelin/loucantou/refs/heads/main/output/{os.path.basename(output_dir)}/"
         for img in root.iter('img'):
             src = img.get('src')
-            full_path = os.path.join(output_dir, src)
-            if os.path.exists(full_path):
-                with open(full_path, 'rb') as f:
-                    encoded = base64.b64encode(f.read()).decode('utf-8')
-                    mime = 'image/png' if src.endswith(
-                        '.png') else 'image/jpeg'
-                    img.set('src', f'data:{mime};base64,{encoded}')
+            clean_src = src.lstrip('./').lstrip('/')
+            img.set('src', base_url + clean_src)
 
 
 class Base64ImageExtension(Extension):
@@ -358,7 +338,7 @@ def generate_html_report():
     with open(os.path.join(output_dir, 'log_analysis_report.md'), 'r') as f:
         md_text = f.read()
 
-    md = markdown.Markdown(extensions=[Base64ImageExtension()])
+    md = markdown.Markdown(extensions=[Base64ImageExtension(), 'markdown.extensions.tables'])
     html = md.convert(md_text)
 
     with open(os.path.join(output_dir, 'log_analysis_report.html'), 'w') as f:
