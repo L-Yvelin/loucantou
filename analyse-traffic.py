@@ -12,6 +12,9 @@ from collections import defaultdict
 import shutil
 import markdown
 import base64
+import xml.etree.ElementTree as ET
+from markdown.treeprocessors import Treeprocessor
+from markdown.extensions import Extension
 
 
 def create_timestamped_subfolder(base_dir, period=None):
@@ -95,6 +98,8 @@ def analyze_log(file_path, period='w'):
     records = []
     with open(file_path, 'r', encoding='utf-8') as f:
         for line in f:
+            if 'api_key' in line.lower():
+                continue
             parsed = parse_log_line(line)
             if parsed:
                 records.append(parsed)
@@ -330,27 +335,34 @@ def generate_markdown_report(results):
 generate_markdown_report(results)
 
 
+class InlineImageProcessor(Treeprocessor):
+    def run(self, root):
+        for img in root.iter('img'):
+            src = img.get('src')
+            full_path = os.path.join(output_dir, src)
+            if os.path.exists(full_path):
+                with open(full_path, 'rb') as f:
+                    encoded = base64.b64encode(f.read()).decode('utf-8')
+                    mime = 'image/png' if src.endswith(
+                        '.png') else 'image/jpeg'
+                    img.set('src', f'data:{mime};base64,{encoded}')
+
+
+class Base64ImageExtension(Extension):
+    def extendMarkdown(self, md):
+        md.treeprocessors.register(
+            InlineImageProcessor(md), 'inline_image', 15)
+
+
 def generate_html_report():
     with open(os.path.join(output_dir, 'log_analysis_report.md'), 'r') as f:
-        markdown_content = f.read()
+        md_text = f.read()
 
-    html_content = markdown.markdown(markdown_content)
-
-    def replace_img(match):
-        img_path = match.group(1)
-        full_img_path = os.path.join(output_dir, img_path)
-        if os.path.exists(full_img_path):
-            with open(full_img_path, 'rb') as img_file:
-                img_data = img_file.read()
-                img_base64 = base64.b64encode(img_data).decode('utf-8')
-                return f'<img src="data:image/png;base64,{img_base64}" alt="">'
-        return match.group(0)
-
-    html_content = re.sub(r'<img src="(.*?)" alt="">',
-                          replace_img, html_content)
+    md = markdown.Markdown(extensions=[Base64ImageExtension()])
+    html = md.convert(md_text)
 
     with open(os.path.join(output_dir, 'log_analysis_report.html'), 'w') as f:
-        f.write(html_content)
+        f.write(html)
 
 
 generate_html_report()
