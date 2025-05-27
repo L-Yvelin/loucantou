@@ -1,3 +1,4 @@
+import pytz
 import re
 import pandas as pd
 from datetime import datetime, timedelta
@@ -7,6 +8,8 @@ from user_agents import parse
 import os
 import numpy as np
 from collections import defaultdict
+import base64
+from io import BytesIO
 
 # Ensure the output directory exists
 output_dir = 'output'
@@ -77,7 +80,8 @@ def analyze_log(file_path, max_lines=None, months=None):
 
     # Filter for the past X months if specified
     if months is not None:
-        cutoff_date = datetime.now() - timedelta(days=30 * months)
+        # Create a timezone-aware cutoff date
+        cutoff_date = datetime.now(pytz.UTC) - timedelta(days=30 * months)
         df = df[df['datetime'] >= cutoff_date]
 
     # Enrich data with user agent details
@@ -115,7 +119,6 @@ def analyze_log(file_path, max_lines=None, months=None):
         lambda x: 1 if '404' in x or '500' in x else 0).sum()
 
     return {
-        'dataframe': unique_visits,
         'visits_per_day': visits_per_day,
         'visits_per_hour': visits_per_hour,
         'visits_per_ip': visits_per_ip,
@@ -140,9 +143,11 @@ def enrich_user_agent(df):
     return df
 
 
-def save_plot(fig, filename):
-    fig.savefig(os.path.join(output_dir, filename))
-    plt.close(fig)
+def plot_to_base64(fig):
+    buf = BytesIO()
+    fig.savefig(buf, format="png")
+    buf.seek(0)
+    return base64.b64encode(buf.read()).decode("utf-8")
 
 
 # Example usage with filtering for the past 3 months
@@ -157,7 +162,8 @@ sns.lineplot(data=visits_per_day_df, x='date', y='visits', ax=ax)
 ax.set_title('Visits per Day')
 ax.set_xlabel('Date')
 ax.set_ylabel('Visits')
-save_plot(fig, 'visits_per_day.png')
+visits_per_day_img = plot_to_base64(fig)
+plt.close(fig)
 
 # Plot visits per hour
 visits_per_hour_df = results['visits_per_hour'].reset_index()
@@ -167,7 +173,8 @@ sns.lineplot(data=visits_per_hour_df, x='hour', y='visits', ax=ax)
 ax.set_title('Visits per Hour')
 ax.set_xlabel('Hour')
 ax.set_ylabel('Visits')
-save_plot(fig, 'visits_per_hour.png')
+visits_per_hour_img = plot_to_base64(fig)
+plt.close(fig)
 
 # Plot top bots
 fig, ax = plt.subplots(figsize=(12, 6))
@@ -177,25 +184,29 @@ ax.set_title('Top Bots')
 ax.set_xlabel('Bot Name')
 ax.set_ylabel('Visits')
 ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
-save_plot(fig, 'top_bots.png')
+top_bots_img = plot_to_base64(fig)
+plt.close(fig)
 
 # Plot device distribution
 fig, ax = plt.subplots(figsize=(12, 6))
 results['device_distribution'].plot(kind='pie', autopct='%1.1f%%', ax=ax)
 ax.set_title('Device Distribution')
-save_plot(fig, 'device_distribution.png')
+device_distribution_img = plot_to_base64(fig)
+plt.close(fig)
 
 # Plot browser distribution
 fig, ax = plt.subplots(figsize=(12, 6))
 results['browser_distribution'].plot(kind='pie', autopct='%1.1f%%', ax=ax)
 ax.set_title('Browser Distribution')
-save_plot(fig, 'browser_distribution.png')
+browser_distribution_img = plot_to_base64(fig)
+plt.close(fig)
 
 # Plot OS distribution
 fig, ax = plt.subplots(figsize=(12, 6))
 results['os_distribution'].plot(kind='pie', autopct='%1.1f%%', ax=ax)
 ax.set_title('OS Distribution')
-save_plot(fig, 'os_distribution.png')
+os_distribution_img = plot_to_base64(fig)
+plt.close(fig)
 
 # Plot top referrers
 fig, ax = plt.subplots(figsize=(12, 6))
@@ -205,7 +216,8 @@ ax.set_title('Top Referrers')
 ax.set_xlabel('Referrer')
 ax.set_ylabel('Visits')
 ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
-save_plot(fig, 'top_referrers.png')
+top_referrers_img = plot_to_base64(fig)
+plt.close(fig)
 
 # Plot top URLs
 fig, ax = plt.subplots(figsize=(12, 6))
@@ -214,7 +226,8 @@ ax.set_title('Top URLs')
 ax.set_xlabel('URL')
 ax.set_ylabel('Visits')
 ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
-save_plot(fig, 'top_urls.png')
+top_urls_img = plot_to_base64(fig)
+plt.close(fig)
 
 # Plot session durations
 session_durations = [duration for durations in results['session_durations'].values()
@@ -224,34 +237,105 @@ sns.histplot(session_durations, bins=30, ax=ax)
 ax.set_title('Session Durations (minutes)')
 ax.set_xlabel('Duration (minutes)')
 ax.set_ylabel('Frequency')
-save_plot(fig, 'session_durations.png')
+session_durations_img = plot_to_base64(fig)
+plt.close(fig)
 
-print("Visits per day:")
-print(results['visits_per_day'])
+# Generate HTML report
 
-print("\nVisits per hour:")
-print(results['visits_per_hour'])
 
-print("\nTop bots:")
-print(results['bots_per_name'])
+def generate_html_report(results):
+    html_content = f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Analysis Report</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Log Analysis Report</h1>
 
-print("\nVisits per IP:")
-print(results['visits_per_ip'].head())
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h2>Visits per Day</h2>
+                <img src="data:image/png;base64,{visits_per_day_img}" class="img-fluid" alt="Visits per Day">
+            </div>
+            <div class="col-md-6">
+                <h2>Visits per Hour</h2>
+                <img src="data:image/png;base64,{visits_per_hour_img}" class="img-fluid" alt="Visits per Hour">
+            </div>
+        </div>
 
-print("\nTop referrers:")
-print(results['top_referrers'])
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h2>Top Bots</h2>
+                <img src="data:image/png;base64,{top_bots_img}" class="img-fluid" alt="Top Bots">
+            </div>
+            <div class="col-md-6">
+                <h2>Device Distribution</h2>
+                <img src="data:image/png;base64,{device_distribution_img}" class="img-fluid" alt="Device Distribution">
+            </div>
+        </div>
 
-print("\nTop URLs:")
-print(results['top_urls'])
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h2>Browser Distribution</h2>
+                <img src="data:image/png;base64,{browser_distribution_img}" class="img-fluid" alt="Browser Distribution">
+            </div>
+            <div class="col-md-6">
+                <h2>OS Distribution</h2>
+                <img src="data:image/png;base64,{os_distribution_img}" class="img-fluid" alt="OS Distribution">
+            </div>
+        </div>
 
-print("\nDevice distribution:")
-print(results['device_distribution'])
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <h2>Top Referrers</h2>
+                <img src="data:image/png;base64,{top_referrers_img}" class="img-fluid" alt="Top Referrers">
+            </div>
+            <div class="col-md-6">
+                <h2>Top URLs</h2>
+                <img src="data:image/png;base64,{top_urls_img}" class="img-fluid" alt="Top URLs">
+            </div>
+        </div>
 
-print("\nBrowser distribution:")
-print(results['browser_distribution'])
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <h2>Session Durations</h2>
+                <img src="data:image/png;base64,{session_durations_img}" class="img-fluid" alt="Session Durations">
+            </div>
+        </div>
 
-print("\nOS distribution:")
-print(results['os_distribution'])
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <h2>Summary</h2>
+                <p><strong>Visits per Day:</strong></p>
+                <pre>{results['visits_per_day']}</pre>
+                <p><strong>Visits per Hour:</strong></p>
+                <pre>{results['visits_per_hour']}</pre>
+                <p><strong>Top Bots:</strong></p>
+                <pre>{results['bots_per_name']}</pre>
+                <p><strong>Top Referrers:</strong></p>
+                <pre>{results['top_referrers']}</pre>
+                <p><strong>Top URLs:</strong></p>
+                <pre>{results['top_urls']}</pre>
+                <p><strong>Device Distribution:</strong></p>
+                <pre>{results['device_distribution']}</pre>
+                <p><strong>Browser Distribution:</strong></p>
+                <pre>{results['browser_distribution']}</pre>
+                <p><strong>OS Distribution:</strong></p>
+                <pre>{results['os_distribution']}</pre>
+                <p><strong>Error Rates:</strong> {results['error_rates']}</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+    """
+    with open(os.path.join(output_dir, 'log_analysis_report.html'), 'w') as f:
+        f.write(html_content)
 
-print("\nError rates:")
-print(results['error_rates'])
+
+generate_html_report(results)
