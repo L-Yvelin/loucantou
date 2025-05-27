@@ -39,7 +39,7 @@ datetime
 2025-05-24     14
 2025-05-25     46
 2025-05-26    118
-2025-05-27     59
+2025-05-27     60
 Name: visits, dtype: int64
 ```
 
@@ -62,7 +62,7 @@ datetime
 14    14
 15     8
 16    22
-17    10
+17    11
 18     7
 19     4
 20    16
@@ -86,7 +86,7 @@ Name: count, dtype: int64
 ### Top Referrers
 ```
 referrer
--                                                     207
+-                                                     208
 https://loucantou.yvelin.net/                          27
 https://loucantou.yvelin.net/en/index.html              5
 http://loucantou1.free.fr/                              4
@@ -104,7 +104,7 @@ Name: count, dtype: int64
 url
 /                                                                                                                    123
 /robots.txt                                                                                                           20
-/logs/loucantou-access.log?api_key=UneCl%C3%A9ApiPourEmp%C3%AAcherLesMalfratsDeSintriduireDansMonSiteSuperCool%21     10
+/logs/loucantou-access.log?api_key=UneCl%C3%A9ApiPourEmp%C3%AAcherLesMalfratsDeSintriduireDansMonSiteSuperCool%21     11
 /en/index.html                                                                                                         9
 /assets/icons/olive.svg                                                                                                8
 /assets/photos/webp/breakfast-800.webp                                                                                 8
@@ -118,7 +118,7 @@ Name: count, dtype: int64
 ### Device Distribution
 ```
 device_type
-Other               113
+Other               114
 Spider               72
 Mac                  42
 iPhone               11
@@ -140,7 +140,7 @@ Chrome                   59
 bingbot                  34
 Edge                     33
 Chrome Mobile            27
-curl                     22
+curl                     23
 Other                    16
 Googlebot                12
 Discordbot               10
@@ -167,7 +167,7 @@ Name: count, dtype: int64
 ### OS Distribution
 ```
 os
-Other       104
+Other       105
 Windows      53
 Android      43
 Mac OS X     42
