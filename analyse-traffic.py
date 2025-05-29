@@ -12,10 +12,21 @@ from collections import defaultdict
 import shutil
 import markdown
 import base64
+import subprocess
+import logging
 import xml.etree.ElementTree as ET
 from markdown.treeprocessors import Treeprocessor
 from markdown.extensions import Extension
 
+# Configure logging settings
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler('log_analysis.log'),  # Log to a file
+        logging.StreamHandler()  # Log to console
+    ]
+)
 
 def create_timestamped_subfolder(base_dir, period=None):
     now = datetime.now()
@@ -30,12 +41,13 @@ def create_timestamped_subfolder(base_dir, period=None):
 
     output_dir = os.path.join(base_dir, folder_name)
     os.makedirs(output_dir, exist_ok=True)
+    logging.info("Created directory: %s", output_dir)
     return output_dir
-
 
 base_output_dir = 'output'
 if not os.path.exists(base_output_dir):
     os.makedirs(base_output_dir, exist_ok=True)
+    logging.info("Created base output directory: %s", base_output_dir)
 
 parser = argparse.ArgumentParser(description='Analyze log files.')
 parser.add_argument('--period', type=str, choices=['w', 'm', 'y'], default='w',
@@ -45,11 +57,10 @@ parser.add_argument('--logpath', type=str, default=None,
 args = parser.parse_args()
 
 if not args.logpath:
-    raise ValueError(
-        "You must provide --logpath argument pointing to the log file")
+    logging.error("Log path argument is missing.")
+    raise ValueError("You must provide --logpath argument pointing to the log file")
 
 output_dir = create_timestamped_subfolder(base_output_dir, period=args.period)
-
 
 def parse_log_line(line):
     match = re.match(
@@ -64,7 +75,6 @@ def parse_log_line(line):
         data['timestamp'], '%d/%b/%Y:%H:%M:%S %z')
     data['is_bot'], data['bot_name'] = detect_bot(data['user_agent'])
     return data
-
 
 def detect_bot(user_agent):
     bot_signatures = {
@@ -93,8 +103,8 @@ def detect_bot(user_agent):
             return True, name
     return False, None
 
-
 def analyze_log(file_path, period='w'):
+    logging.info("Analyzing log file: %s", file_path)
     records = []
     with open(file_path, 'r', encoding='utf-8') as f:
         for line in f:
@@ -106,6 +116,7 @@ def analyze_log(file_path, period='w'):
 
     df = pd.DataFrame(records)
     if df.empty:
+        logging.warning("No valid records found in log file.")
         return {}
 
     now = datetime.now(pytz.UTC)
@@ -164,7 +175,6 @@ def analyze_log(file_path, period='w'):
         'error_rates': error_rates
     }
 
-
 def enrich_user_agent(df):
     df['device_type'] = df['user_agent'].apply(
         lambda ua: parse(ua).device.family)
@@ -172,11 +182,11 @@ def enrich_user_agent(df):
     df['os'] = df['user_agent'].apply(lambda ua: parse(ua).os.family)
     return df
 
-
 def save_plot(fig, filename):
-    fig.savefig(os.path.join(output_dir, filename))
+    plot_path = os.path.join(output_dir, filename)
+    fig.savefig(plot_path)
     plt.close(fig)
-
+    logging.info("Saved plot: %s", plot_path)
 
 results = analyze_log(args.logpath, period=args.period)
 
@@ -248,7 +258,6 @@ ax.set_xlabel('Duration (minutes)')
 ax.set_ylabel('Frequency')
 save_plot(fig, 'session_durations.png')
 
-
 def generate_markdown_report(results):
     markdown_content = f"""
 # Log Analysis Report
@@ -307,17 +316,14 @@ def generate_markdown_report(results):
 {results['os_distribution'].to_frame().to_markdown()}
 
 ### Error Rates
-```
 {results['error_rates']}
-```
-
 """
-    with open(os.path.join(output_dir, 'log_analysis_report.md'), 'w') as f:
+    report_path = os.path.join(output_dir, 'log_analysis_report.md')
+    with open(report_path, 'w') as f:
         f.write(markdown_content)
-
+    logging.info("Generated markdown report: %s", report_path)
 
 generate_markdown_report(results)
-
 
 class InlineImageProcessor(Treeprocessor):
     def run(self, root):
@@ -327,22 +333,27 @@ class InlineImageProcessor(Treeprocessor):
             clean_src = src.lstrip('./').lstrip('/')
             img.set('src', base_url + clean_src)
 
-
 class Base64ImageExtension(Extension):
     def extendMarkdown(self, md):
         md.treeprocessors.register(
             InlineImageProcessor(md), 'inline_image', 15)
 
-
 def generate_html_report():
-    with open(os.path.join(output_dir, 'log_analysis_report.md'), 'r') as f:
+    markdown_path = os.path.join(output_dir, 'log_analysis_report.md')
+    with open(markdown_path, 'r') as f:
         md_text = f.read()
 
     md = markdown.Markdown(extensions=[Base64ImageExtension(), 'markdown.extensions.tables'])
     html = md.convert(md_text)
 
-    with open(os.path.join(output_dir, 'log_analysis_report.html'), 'w') as f:
+    html_report_path = os.path.join(output_dir, 'log_analysis_report.html')
+    with open(html_report_path, 'w') as f:
         f.write(html)
-
+    logging.info("Generated HTML report: %s", html_report_path)
 
 generate_html_report()
+
+# Log the list of files in the new directory
+logging.info("Listing files in the directory: %s", output_dir)
+result = subprocess.run(['ls', output_dir], capture_output=True, text=True)
+logging.info("Files in directory:\n%s", result.stdout)
