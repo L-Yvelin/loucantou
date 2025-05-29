@@ -47,7 +47,7 @@ jobs:
 
       - name: Check Git status
         run: |
-        git status
+          git status
 
       - name: Get html diff file
         id: get_html
