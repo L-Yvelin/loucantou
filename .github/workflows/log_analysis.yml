@@ -41,6 +41,14 @@ jobs:
         run: |
           python analyse-traffic.py --period w --logpath loucantou-access.log
 
+      - name: Add HTML file to Git
+        run: |
+          git add output/*.html
+
+      - name: Check Git status
+        run: |
+        git status
+
       - name: Get html diff file
         id: get_html
         run: |
