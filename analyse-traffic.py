@@ -184,110 +184,87 @@ def enrich_user_agent(df):
 
 def save_plot(fig, filename):
     plot_path = os.path.join(output_dir, filename)
-    fig.savefig(plot_path)
+    fig.savefig(plot_path, bbox_inches='tight')
     plt.close(fig)
     logging.info("Saved plot: %s", plot_path)
 
 results = analyze_log(args.logpath, period=args.period)
 
+# Customize plots
+sns.set(style="whitegrid")
+plt.rcParams['figure.facecolor'] = 'white'
+
 visits_per_day_df = results['visits_per_day'].reset_index()
 visits_per_day_df.columns = ['date', 'visits']
 fig, ax = plt.subplots(figsize=(12, 6))
-sns.lineplot(data=visits_per_day_df, x='date', y='visits', ax=ax)
-ax.set_title('Visits per Day')
-ax.set_xlabel('Date')
-ax.set_ylabel('Visits')
+sns.lineplot(data=visits_per_day_df, x='date', y='visits', ax=ax, color='b')
+ax.set_title('Visits per Day', fontsize=16)
+ax.set_xlabel('Date', fontsize=14)
+ax.set_ylabel('Visits', fontsize=14)
 save_plot(fig, 'visits_per_day.png')
 
 visits_per_hour_df = results['visits_per_hour'].reset_index()
 visits_per_hour_df.columns = ['hour', 'visits']
 fig, ax = plt.subplots(figsize=(12, 6))
-sns.lineplot(data=visits_per_hour_df, x='hour', y='visits', ax=ax)
-ax.set_title('Visits per Hour')
-ax.set_xlabel('Hour')
-ax.set_ylabel('Visits')
+sns.lineplot(data=visits_per_hour_df, x='hour', y='visits', ax=ax, color='g')
+ax.set_title('Visits per Hour', fontsize=16)
+ax.set_xlabel('Hour', fontsize=14)
+ax.set_ylabel('Visits', fontsize=14)
 save_plot(fig, 'visits_per_hour.png')
 
 fig, ax = plt.subplots(figsize=(12, 6))
 sns.barplot(x=results['bots_per_name'].index,
-            y=results['bots_per_name'].values, ax=ax)
-ax.set_title('Top Bots')
-ax.set_xlabel('Bot Name')
-ax.set_ylabel('Visits')
+            y=results['bots_per_name'].values, ax=ax, palette='viridis')
+ax.set_title('Top Bots', fontsize=16)
+ax.set_xlabel('Bot Name', fontsize=14)
+ax.set_ylabel('Visits', fontsize=14)
 ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
 save_plot(fig, 'top_bots.png')
 
 fig, ax = plt.subplots(figsize=(12, 6))
-results['device_distribution'].plot(kind='pie', autopct='%1.1f%%', ax=ax)
-ax.set_title('Device Distribution')
+results['device_distribution'].plot(kind='pie', autopct='%1.1f%%', ax=ax, colors=sns.color_palette('pastel'))
+ax.set_title('Device Distribution', fontsize=16)
 save_plot(fig, 'device_distribution.png')
 
 fig, ax = plt.subplots(figsize=(12, 6))
-results['browser_distribution'].plot(kind='pie', autopct='%1.1f%%', ax=ax)
-ax.set_title('Browser Distribution')
+results['browser_distribution'].plot(kind='pie', autopct='%1.1f%%', ax=ax, colors=sns.color_palette('pastel'))
+ax.set_title('Browser Distribution', fontsize=16)
 save_plot(fig, 'browser_distribution.png')
 
 fig, ax = plt.subplots(figsize=(12, 6))
-results['os_distribution'].plot(kind='pie', autopct='%1.1f%%', ax=ax)
-ax.set_title('OS Distribution')
+results['os_distribution'].plot(kind='pie', autopct='%1.1f%%', ax=ax, colors=sns.color_palette('pastel'))
+ax.set_title('OS Distribution', fontsize=16)
 save_plot(fig, 'os_distribution.png')
 
 fig, ax = plt.subplots(figsize=(12, 6))
 sns.barplot(x=results['top_referrers'].index,
-            y=results['top_referrers'].values, ax=ax)
-ax.set_title('Top Referrers')
-ax.set_xlabel('Referrer')
-ax.set_ylabel('Visits')
+            y=results['top_referrers'].values, ax=ax, palette='viridis')
+ax.set_title('Top Referrers', fontsize=16)
+ax.set_xlabel('Referrer', fontsize=14)
+ax.set_ylabel('Visits', fontsize=14)
 ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
 save_plot(fig, 'top_referrers.png')
 
 fig, ax = plt.subplots(figsize=(12, 6))
-sns.barplot(x=results['top_urls'].index, y=results['top_urls'].values, ax=ax)
-ax.set_title('Top URLs')
-ax.set_xlabel('URL')
-ax.set_ylabel('Visits')
+sns.barplot(x=results['top_urls'].index, y=results['top_urls'].values, ax=ax, palette='viridis')
+ax.set_title('Top URLs', fontsize=16)
+ax.set_xlabel('URL', fontsize=14)
+ax.set_ylabel('Visits', fontsize=14)
 ax.set_xticklabels(ax.get_xticklabels(), rotation=45)
 save_plot(fig, 'top_urls.png')
 
 session_durations = [duration for durations in results['session_durations'].values()
                      for duration in durations]
 fig, ax = plt.subplots(figsize=(12, 6))
-sns.histplot(session_durations, bins=30, ax=ax)
-ax.set_title('Session Durations (minutes)')
-ax.set_xlabel('Duration (minutes)')
-ax.set_ylabel('Frequency')
+sns.histplot(session_durations, bins=30, ax=ax, color='c')
+ax.set_title('Session Durations (minutes)', fontsize=16)
+ax.set_xlabel('Duration (minutes)', fontsize=14)
+ax.set_ylabel('Frequency', fontsize=14)
 save_plot(fig, 'session_durations.png')
 
 def generate_markdown_report(results):
     markdown_content = f"""
 # Log Analysis Report
-
-## Visits per Day
-![Visits per Day](./visits_per_day.png)
-
-## Visits per Hour
-![Visits per Hour](./visits_per_hour.png)
-
-## Top Bots
-![Top Bots](./top_bots.png)
-
-## Device Distribution
-![Device Distribution](./device_distribution.png)
-
-## Browser Distribution
-![Browser Distribution](./browser_distribution.png)
-
-## OS Distribution
-![OS Distribution](./os_distribution.png)
-
-## Top Referrers
-![Top Referrers](./top_referrers.png)
-
-## Top URLs
-![Top URLs](./top_urls.png)
-
-## Session Durations
-![Session Durations](./session_durations.png)
 
 ## Summary
 
@@ -317,6 +294,35 @@ def generate_markdown_report(results):
 
 ### Error Rates
 {results['error_rates']}
+
+## Visualizations
+
+### Visits per Day
+![Visits per Day](./visits_per_day.png)
+
+### Visits per Hour
+![Visits per Hour](./visits_per_hour.png)
+
+### Top Bots
+![Top Bots](./top_bots.png)
+
+### Device Distribution
+![Device Distribution](./device_distribution.png)
+
+### Browser Distribution
+![Browser Distribution](./browser_distribution.png)
+
+### OS Distribution
+![OS Distribution](./os_distribution.png)
+
+### Top Referrers
+![Top Referrers](./top_referrers.png)
+
+### Top URLs
+![Top URLs](./top_urls.png)
+
+### Session Durations
+![Session Durations](./session_durations.png)
 """
     report_path = os.path.join(output_dir, 'log_analysis_report.md')
     with open(report_path, 'w') as f:
@@ -343,12 +349,39 @@ def generate_html_report():
     with open(markdown_path, 'r') as f:
         md_text = f.read()
 
-    md = markdown.Markdown(extensions=[Base64ImageExtension(), 'markdown.extensions.tables'])
+    md = markdown.Markdown(extensions=[Base64ImageExtension(), 'markdown.extensions.tables', 'markdown.extensions.fenced_code'])
     html = md.convert(md_text)
+
+    html_template = f"""
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Analysis Report</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {{ font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; color: #333; }}
+        h1, h2, h3 {{ color: #2c3e50; }}
+        table {{ width: 100%; border-collapse: collapse; margin: 20px 0; }}
+        table, th, td {{ border: 1px solid #ddd; }}
+        th, td {{ padding: 12px; text-align: left; }}
+        th {{ background-color: #f2f2f2; }}
+        img {{ max-width: 100%; height: auto; }}
+        .container {{ max-width: 1200px; margin: auto; }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        {html}
+    </div>
+</body>
+</html>
+"""
 
     html_report_path = os.path.join(output_dir, 'log_analysis_report.html')
     with open(html_report_path, 'w') as f:
-        f.write(html)
+        f.write(html_template)
     logging.info("Generated HTML report: %s", html_report_path)
 
 generate_html_report()
