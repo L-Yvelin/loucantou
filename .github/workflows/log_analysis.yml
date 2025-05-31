@@ -24,7 +24,7 @@ jobs:
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pandas matplotlib seaborn user-agents pytz markdown tabulate
+          pip install pandas matplotlib user-agents jinja2 geoip2 plotly kaleido pycountry
 
       - name: Fetch log file
         env:
@@ -39,7 +39,7 @@ jobs:
 
       - name: Run traffic analysis
         run: |
-          python analyse-traffic.py --period w --logpath loucantou-access.log
+          python analyse-traffic.py --period w --logpath loucantou-access.log --domain loucantou.yvelin.net
 
       - name: Add HTML file to Git
         run: |
