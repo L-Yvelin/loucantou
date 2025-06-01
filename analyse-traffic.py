@@ -3,7 +3,7 @@ import os
 import re
 import argparse
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 import urllib.request
 from typing import Optional, List, Tuple, Dict, Any
 
@@ -16,7 +16,7 @@ import plotly.graph_objects as go
 import pycountry
 
 # Constants
-GEO_DB_URL = "https://github.com/P3TERX/GeoLite.mmdb/releases/download/2025.05.28/GeoLite2-Country.mmdb"
+GEO_DB_URL = "https://github.com/P3TERX/GeoLite.mmdb/releases/latest/download/GeoLite2-Country.mmdb"
 LOCAL_GEO_DB = "GeoLite2-Country.mmdb"
 LOG_RE = re.compile(
     r'(?P<ip>\S+) - - \[(?P<ts>.*?)\] '
@@ -204,15 +204,19 @@ def download_geodb(path: str) -> None:
             raise
 
 
-def is_bot_custom(ua: str) -> bool:
+def is_bot_or_suspicious(ua: str, ref: str, domain: str, url: str, method: str) -> bool:
     """
-    Check if a user agent string indicates a bot based on a list of known bot indicators.
+    Check if a request is from a bot or suspicious based on user agent, referrer, URL, and method.
 
     Args:
         ua (str): The user agent string to check.
+        ref (str): The referrer URL.
+        domain (str): The domain to exclude from referrers.
+        url (str): The URL to check.
+        method (str): The HTTP method used in the request.
 
     Returns:
-        bool: True if the user agent is identified as a bot, False otherwise.
+        bool: True if the request is from a bot or suspicious, False otherwise.
     """
     ua = ua.lower()
     bot_indicators = [
@@ -222,38 +226,18 @@ def is_bot_custom(ua: str) -> bool:
         "lighthouse", "axios", "scrapy", "httpx", "phantomjs",
         "headless", "libwww", "mechanize", "apachebench"
     ]
-    return any(indicator in ua for indicator in bot_indicators)
+    if any(indicator in ua for indicator in bot_indicators):
+        return True
 
-
-def is_static_file(url: str) -> bool:
-    """
-    Check if a URL points to a static file based on common static file extensions.
-
-    Args:
-        url (str): The URL to check.
-
-    Returns:
-        bool: True if the URL points to a static file, False otherwise.
-    """
-    static_extensions = ['.jpg', '.png', '.css', '.js',
-                         '.svg', '.ico', '.woff', '.woff2', '.ttf']
-    return any(url.endswith(ext) for ext in static_extensions)
-
-
-def is_suspicious_request(url: str, method: str) -> bool:
-    """
-    Check if a request is suspicious based on URL patterns and HTTP methods.
-
-    Args:
-        url (str): The URL to check.
-        method (str): The HTTP method used in the request.
-
-    Returns:
-        bool: True if the request is suspicious, False otherwise.
-    """
     suspicious_patterns = ['/wp-admin/', '/admin/', '/login/', '/phpmyadmin/']
     suspicious_methods = ['POST', 'PUT', 'DELETE']
-    return any(pattern in url for pattern in suspicious_patterns) or method in suspicious_methods
+    if any(pattern in url for pattern in suspicious_patterns) or method in suspicious_methods:
+        return True
+
+    if ref == '-' or domain in ref:
+        return True
+
+    return False
 
 
 def parse_log_line(line: str, domain: str) -> Optional[Dict[str, Any]]:
@@ -276,20 +260,14 @@ def parse_log_line(line: str, domain: str) -> Optional[Dict[str, Any]]:
     except ValueError:
         return None
 
-    ua_str = d['ua']
-    ua = parse_ua(ua_str)
-    if ua.is_bot or is_bot_custom(ua_str):
-        return None
-
-    if d['ref'] == '-' or domain in d['ref'] or is_static_file(d['url']) or d['status'] == '404' or is_suspicious_request(d['url'], d['method']):
-        return None
-
     return {
         'ip': d['ip'],
         'dt': dt,
         'url': d['url'],
         'status': int(d['status']),
-        'ref': d['ref']
+        'ref': d['ref'],
+        'ua': d['ua'],
+        'method': d['method']
     }
 
 
@@ -348,16 +326,37 @@ def identify_sessions(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
         'dt': ['min', 'max'],
         'ip': 'first',
         'url': 'first',  # Landing page (first URL in session)
-        'ref': 'first'   # Session referrer (first referrer in session)
+        'ref': 'first',   # Session referrer (first referrer in session)
+        'ua': 'first',    # User agent (first user agent in session)
+        'method': 'first'  # Method (first method in session)
     }).reset_index()
 
     # Flatten column names
-    sess_summary.columns = ['sess_id', 'start',
-                            'end', 'ip', 'landing_page', 'referrer']
+    sess_summary.columns = ['sess_id', 'start', 'end',
+                            'ip', 'landing_page', 'referrer', 'ua', 'method']
     sess_summary['duration'] = (
         sess_summary['end'] - sess_summary['start']).dt.total_seconds().div(60)
 
     return sess_summary, df
+
+
+def filter_sessions(sess_summary: pd.DataFrame, domain: str) -> pd.DataFrame:
+    """
+    Filter out sessions that are identified as bots or suspicious.
+
+    Args:
+        sess_summary (pd.DataFrame): The session summary data.
+        domain (str): The domain to exclude from referrers.
+
+    Returns:
+        pd.DataFrame: The filtered session summary data.
+    """
+    filtered_sessions = sess_summary[~sess_summary.apply(
+        lambda row: is_bot_or_suspicious(
+            row['ua'], row['referrer'], domain, row['landing_page'], row['method']),
+        axis=1
+    )]
+    return filtered_sessions
 
 
 def ensure_dirs(base: str = 'output', period: str = 'w') -> Tuple[str, str, str]:
@@ -410,7 +409,7 @@ def save_plotly(fig: go.Figure, out_dir: str, fname: str) -> None:
         raise
 
 
-def generate_visualizations(sess: pd.DataFrame, df_enriched: pd.DataFrame, img_dir: str, domain: str) -> Dict[str, Any]:
+def generate_visualizations(sess: pd.DataFrame, df: pd.DataFrame, img_dir: str, domain: str) -> Dict[str, Any]:
     """
     Generate session-based visualizations from session data, saving them as image files.
 
@@ -440,10 +439,13 @@ def generate_visualizations(sess: pd.DataFrame, df_enriched: pd.DataFrame, img_d
     save_plotly(fig, img_dir, "sessions_dow.png")
 
     # Top 5 Landing Pages (session-based)
-    # Filter for actual pages (not just any URL)
-    landing_pages = sess['landing_page'].copy()
-    landing_pages = landing_pages[landing_pages.str.endswith(
-        ('/', '.html')) | (landing_pages == '')]
+    landing_pages = df['url'].copy()
+    landing_pages = landing_pages[
+        landing_pages.str.endswith('.html') |
+        landing_pages.str.endswith('/') |
+        (landing_pages == '')
+    ]
+    landing_pages = landing_pages.str.replace(r'index\.html$', '', regex=True)
     top5_pages = landing_pages.value_counts().iloc[:5]
 
     fig = px.bar(
@@ -559,7 +561,7 @@ def main() -> None:
     args = parser.parse_args()
 
     # Calculate start date based on the period
-    now = datetime.now()
+    now = datetime.now(timezone.utc)
     if args.period == 'w':
         start_date = now - timedelta(days=7)
     elif args.period == 'm':
@@ -577,12 +579,13 @@ def main() -> None:
 
     df = load_and_clean(args.logpath, args.domain, start_date)
     sess, df_enriched = identify_sessions(df)
+    sess = filter_sessions(sess, args.domain)
 
     logging.info(
         f"Processed {len(df)} log entries into {len(sess)} sessions from {sess['ip'].nunique()} unique IPs")
 
     template_data = generate_visualizations(
-        sess, df_enriched, img_dir, args.domain)
+        sess, df, img_dir, args.domain)
 
     html_out = os.path.join(base, folder, "dashboard.html")
     generate_html(template_data, base_url, args.domain, html_out)
