@@ -3,7 +3,7 @@ import os
 import re
 import argparse
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 import urllib.request
 from typing import Optional, List, Tuple, Dict, Any
 
@@ -293,13 +293,14 @@ def parse_log_line(line: str, domain: str) -> Optional[Dict[str, Any]]:
     }
 
 
-def load_and_clean(logpath: str, domain: str) -> pd.DataFrame:
+def load_and_clean(logpath: str, domain: str, start_date: datetime) -> pd.DataFrame:
     """
     Load and clean log data from a log file, filtering out invalid or irrelevant entries.
 
     Args:
         logpath (str): The path to the log file.
         domain (str): The domain to exclude from referrers.
+        start_date (datetime): The start date for filtering log entries.
 
     Returns:
         pd.DataFrame: A DataFrame containing the cleaned log data.
@@ -312,7 +313,7 @@ def load_and_clean(logpath: str, domain: str) -> pd.DataFrame:
         with open(logpath, errors='ignore') as f:
             for line in f:
                 rec = parse_log_line(line, domain)
-                if rec:
+                if rec and rec['dt'] >= start_date:
                     rows.append(rec)
     except Exception as e:
         logging.error("Failed to read log file: %s", e)
@@ -557,13 +558,24 @@ def main() -> None:
         '--period', choices=['w', 'm', 'y'], default='w', help="w=weekly, m=monthly, y=yearly")
     args = parser.parse_args()
 
+    # Calculate start date based on the period
+    now = datetime.now()
+    if args.period == 'w':
+        start_date = now - timedelta(days=7)
+    elif args.period == 'm':
+        start_date = now - timedelta(days=30)
+    elif args.period == 'y':
+        start_date = now - timedelta(days=365)
+    else:
+        start_date = now - timedelta(days=7)
+
     download_geodb(LOCAL_GEO_DB)
 
     base, folder, img_dir = ensure_dirs('output', args.period)
     raw_base = "https://raw.githubusercontent.com/L-Yvelin/loucantou/refs/heads/main/output"
     base_url = f"{raw_base}/{folder}/images"
 
-    df = load_and_clean(args.logpath, args.domain)
+    df = load_and_clean(args.logpath, args.domain, start_date)
     sess, df_enriched = identify_sessions(df)
 
     logging.info(
