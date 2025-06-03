@@ -37,7 +37,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>B&amp;B Website Dashboard</title>
+  <title>Loucantou traffic recap</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     body {
@@ -130,7 +130,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
   </style>
 </head>
 <body>
-  <h1 class="mb-4">Website Dashboard <small class="text-muted">({{ generated }})</small></h1>
+  <h1 class="mb-4">Loucantou traffic recap <small class="text-muted">({{ generated }})</small></h1>
 
   <div class="summary">
     <div class="card">
@@ -163,8 +163,10 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     </tbody>
   </table>
 
-  <h2>Most represented countries</h2>
-  <img src="{{ base_url }}/top5_countries.png" alt="Most represented countries" loading="lazy" />
+  <h2>Countries Distribution</h2>
+  <h3 class="value">France represents {{ "%.1f"|format(france_percentage) }}% of the visits</h3>
+  <p>The remaining is:</p>
+  <img src="{{ base_url }}/countries_pie_excluding_france.png" alt="Countries Distribution" loading="lazy" />
 
   <p class="small">
     * GeoIP via MaxMind GeoLite2 (free).<br />
@@ -175,7 +177,7 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 </html>"""
 
 
-def setup_logging() -> None:
+def setup_logging():
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s',
@@ -186,7 +188,7 @@ def setup_logging() -> None:
     )
 
 
-def download_geodb(path: str) -> None:
+def download_geodb(path):
     if not os.path.isfile(path):
         logging.info("Downloading GeoLite2 DB to %s ...", path)
         try:
@@ -197,7 +199,7 @@ def download_geodb(path: str) -> None:
             raise
 
 
-def load_and_process_sessions(logpath: str, domain: str, start_date: datetime) -> List[Tuple[str, List[Dict]]]:
+def load_and_process_sessions(logpath, domain, start_date):
     sessions = {}
 
     with open(logpath, errors='ignore') as f:
@@ -251,7 +253,7 @@ def load_and_process_sessions(logpath: str, domain: str, start_date: datetime) -
     return user_sessions
 
 
-def ensure_dirs(base: str = 'output', period: str = 'w') -> Tuple[str, str, str]:
+def ensure_dirs(base='output', period='w'):
     now = datetime.now()
     if period == 'w':
         fld = f"w-{now:%Y-%m-%d}"
@@ -267,11 +269,12 @@ def ensure_dirs(base: str = 'output', period: str = 'w') -> Tuple[str, str, str]
     return base, fld, img_dir
 
 
-def save_plotly(fig: go.Figure, out_dir: str, fname: str) -> None:
+def save_plotly(fig, out_dir, fname):
     fig.update_layout(
         template='plotly_white',
         margin=dict(t=40, b=20, l=30, r=20),
-        font=dict(family="Inter, sans-serif", size=14)
+        font=dict(family="Inter, sans-serif", size=14),
+        showlegend=False
     )
     try:
         fig.write_image(os.path.join(out_dir, fname), engine="kaleido")
@@ -280,7 +283,7 @@ def save_plotly(fig: go.Figure, out_dir: str, fname: str) -> None:
         raise
 
 
-def generate_visualizations(user_sessions: List[Tuple[str, List[Dict]]], img_dir: str, domain: str) -> Dict[str, Any]:
+def generate_visualizations(user_sessions, img_dir, domain):
     total_visits = len(user_sessions)
     unique_ips = len(set(ip for ip, _ in user_sessions))
 
@@ -312,7 +315,6 @@ def generate_visualizations(user_sessions: List[Tuple[str, List[Dict]]], img_dir
         x=hrs.index, y=hrs.values,
         labels={'x': 'Hour of Day', 'y': 'Sessions'},
     )
-
     save_plotly(fig, img_dir, "sessions_by_hour.png")
 
     ext_referrers = []
@@ -326,34 +328,58 @@ def generate_visualizations(user_sessions: List[Tuple[str, List[Dict]]], img_dir
 
     reader = geoip2.database.Reader(LOCAL_GEO_DB)
 
-    def lookup_country(ip: str) -> str:
+    def lookup_country(ip):
         try:
-            return reader.country(ip).country.iso_code or 'Unknown'
-        except geoip2.errors.AddressNotFoundError:
+            response = reader.country(ip)
+            if response.country.iso_code:
+                country = pycountry.countries.get(
+                    alpha_2=response.country.iso_code)
+                return country.name if country else 'Unknown'
+            return 'Unknown'
+        except (geoip2.errors.AddressNotFoundError, AttributeError):
             return 'Unknown'
 
     countries = [lookup_country(ip) for ip, _ in user_sessions]
     reader.close()
 
     cc = pd.Series(countries).value_counts()
-    top5c = cc.iloc[:5]
-    fig = px.bar(
-        x=top5c.index, y=top5c.values,
-        labels={'x': 'Country', 'y': 'Sessions'},
-        color=top5c.values,
-        color_continuous_scale=px.colors.sequential.Blues
+    france_count = cc.get('France', 0)
+    other_countries = cc.drop('France', errors='ignore')
+
+    fig = px.pie(
+        names=other_countries.index,
+        values=other_countries.values,
+        hole=0.3,
+        labels={'names': 'Country', 'values': 'Visits'},
     )
-    save_plotly(fig, img_dir, "top5_countries.png")
+
+    fig.update_traces(
+        textposition='inside',
+        textinfo='label+percent',
+        hovertemplate="<b>%{label}</b><br>%{percent:.1%} (%{value} visits)<extra></extra>",
+        texttemplate='%{label}<br>%{percent:.1%}'
+    )
+
+    fig.update_layout(
+        uniformtext_minsize=12,
+        uniformtext_mode='hide',
+        margin=dict(t=0, b=0, l=0, r=0)
+    )
+
+    save_plotly(fig, img_dir, "countries_pie_excluding_france.png")
+
+    france_percentage = (france_count / total_visits) * 100
 
     return {
         'total_visits': total_visits,
         'unique_ips': unique_ips,
         'avg_len': avg_len,
-        'top5_ref': top5_ref
+        'top5_ref': top5_ref,
+        'france_percentage': france_percentage
     }
 
 
-def generate_html(template_data: Dict[str, Any], base_url: str, domain: str, output_path: str) -> None:
+def generate_html(template_data, base_url, domain, output_path):
     try:
         with open(output_path, "w", encoding="utf-8") as f:
             tpl = Template(HTML_TEMPLATE)
@@ -368,7 +394,7 @@ def generate_html(template_data: Dict[str, Any], base_url: str, domain: str, out
         raise
 
 
-def main() -> None:
+def main():
     setup_logging()
     parser = argparse.ArgumentParser(
         description="Analyze website traffic (session-based)")
