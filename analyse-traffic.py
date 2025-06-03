@@ -4,18 +4,13 @@ import re
 import argparse
 import logging
 import statistics
-import math
 from datetime import datetime, timedelta, timezone
 import urllib.request
-from typing import Optional, List, Tuple, Dict, Any
-from collections import Counter
 
 import pandas as pd
-from user_agents import parse as parse_ua
 from jinja2 import Template
 import geoip2.database
 import plotly.express as px
-import plotly.graph_objects as go
 import pycountry
 
 GEO_DB_URL = "https://github.com/P3TERX/GeoLite.mmdb/releases/latest/download/GeoLite2-Country.mmdb"
