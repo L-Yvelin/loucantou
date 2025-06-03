@@ -3,6 +3,8 @@ import os
 import re
 import argparse
 import logging
+import statistics
+import math
 from datetime import datetime, timedelta, timezone
 import urllib.request
 from typing import Optional, List, Tuple, Dict, Any
@@ -15,14 +17,20 @@ import plotly.express as px
 import plotly.graph_objects as go
 import pycountry
 
-# Constants
 GEO_DB_URL = "https://github.com/P3TERX/GeoLite.mmdb/releases/latest/download/GeoLite2-Country.mmdb"
 LOCAL_GEO_DB = "GeoLite2-Country.mmdb"
-LOG_RE = re.compile(
-    r'(?P<ip>\S+) - - \[(?P<ts>.*?)\] '
-    r'"(?P<method>\w+) (?P<url>\S+) HTTP/\d\.\d" '
-    r'(?P<status>\d+) \d+ "(?P<ref>.*?)" "(?P<ua>.*?)"'
+
+log_pattern = re.compile(
+    r'(?P<ip>\d+\.\d+\.\d+\.\d+)\s+-\s+-\s+'
+    r'\[(?P<timestamp>[^\]]+)\]\s+'
+    r'"(?P<method>[A-Z]+)\s(?P<url>\S+)\s(?P<protocol>[^"]+)"\s+'
+    r'(?P<status>\d{3})\s+'
+    r'(?P<size>\d+|-)\s+'
+    r'"(?P<referrer>[^"]*)"\s+'
+    r'"(?P<user_agent>[^"]+)"'
 )
+referrer_regex = re.compile(r"^(-|.*loucantou\.yvelin\.net.*)?$")
+
 HTML_TEMPLATE = """<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -173,7 +181,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
 
 def setup_logging() -> None:
-    """Set up logging configuration with a specific format and level."""
     logging.basicConfig(
         level=logging.INFO,
         format='%(asctime)s - %(levelname)s - %(message)s',
@@ -185,15 +192,6 @@ def setup_logging() -> None:
 
 
 def download_geodb(path: str) -> None:
-    """
-    Download the GeoLite2 database from a specified URL if it does not exist locally.
-
-    Args:
-        path (str): The local path where the GeoLite2 database will be saved.
-
-    Raises:
-        Exception: If there is an error during the download process.
-    """
     if not os.path.isfile(path):
         logging.info("Downloading GeoLite2 DB to %s ...", path)
         try:
@@ -204,172 +202,55 @@ def download_geodb(path: str) -> None:
             raise
 
 
-def is_bot_or_suspicious(ua: str, ref: str, domain: str, url: str, method: str) -> bool:
-    """
-    Check if a request is from a bot or suspicious based on user agent, referrer, URL, and method.
+def load_and_process_sessions(logpath: str, domain: str, start_date: datetime) -> List[Tuple[str, List[Dict]]]:
+    sessions = {}
 
-    Args:
-        ua (str): The user agent string to check.
-        ref (str): The referrer URL.
-        domain (str): The domain to exclude from referrers.
-        url (str): The URL to check.
-        method (str): The HTTP method used in the request.
+    with open(logpath, errors='ignore') as f:
+        for raw_line in f:
+            match = log_pattern.match(raw_line)
+            if not match:
+                continue
 
-    Returns:
-        bool: True if the request is from a bot or suspicious, False otherwise.
-    """
-    ua = ua.lower()
-    bot_indicators = [
-        "bot", "crawler", "spider", "crawl", "slurp", "search",
-        "archive", "transcoder", "monitor", "fetch", "loader",
-        "python-requests", "httpclient", "java", "wget", "curl",
-        "lighthouse", "axios", "scrapy", "httpx", "phantomjs",
-        "headless", "libwww", "mechanize", "apachebench"
-    ]
-    if any(indicator in ua for indicator in bot_indicators):
-        return True
+            data = match.groupdict()
+            try:
+                dt = datetime.strptime(
+                    data['timestamp'], '%d/%b/%Y:%H:%M:%S %z')
+                data['timestamp'] = dt
+            except ValueError:
+                continue
 
-    suspicious_patterns = ['/wp-admin/', '/admin/', '/login/', '/phpmyadmin/']
-    suspicious_methods = ['POST', 'PUT', 'DELETE']
-    if any(pattern in url for pattern in suspicious_patterns) or method in suspicious_methods:
-        return True
+            if dt < start_date:
+                continue
 
-    if ref == '-' or domain in ref:
-        return True
+            ip = data['ip']
 
-    return False
+            if ip not in sessions:
+                sessions[ip] = [[data]]
+            else:
+                last_session = sessions[ip][-1]
+                last_dt = last_session[-1]['timestamp']
+                if (dt - last_dt).total_seconds() > 1800:
+                    sessions[ip].append([data])
+                else:
+                    last_session.append(data)
 
+    user_sessions = []
+    for ip, session_list in sessions.items():
+        for session in session_list:
+            if all(
+                all(
+                    referrer_regex.match(ref)
+                    for ref in (line.get('referrer') for line in session)
+                )
+                for session in session_list
+            ):
+                continue
+            user_sessions.append((ip, session))
 
-def parse_log_line(line: str, domain: str) -> Optional[Dict[str, Any]]:
-    """
-    Parse a log line and extract relevant information such as IP, timestamp, URL, etc.
-
-    Args:
-        line (str): The log line to parse.
-        domain (str): The domain to exclude from referrers.
-
-    Returns:
-        Optional[Dict[str, Any]]: A dictionary containing the parsed log data if the line is valid, None otherwise.
-    """
-    m = LOG_RE.match(line)
-    if not m:
-        return None
-    d = m.groupdict()
-    try:
-        dt = datetime.strptime(d['ts'], '%d/%b/%Y:%H:%M:%S %z')
-    except ValueError:
-        return None
-
-    return {
-        'ip': d['ip'],
-        'dt': dt,
-        'url': d['url'],
-        'status': int(d['status']),
-        'ref': d['ref'],
-        'ua': d['ua'],
-        'method': d['method']
-    }
-
-
-def load_and_clean(logpath: str, domain: str, start_date: datetime) -> pd.DataFrame:
-    """
-    Load and clean log data from a log file, filtering out invalid or irrelevant entries.
-
-    Args:
-        logpath (str): The path to the log file.
-        domain (str): The domain to exclude from referrers.
-        start_date (datetime): The start date for filtering log entries.
-
-    Returns:
-        pd.DataFrame: A DataFrame containing the cleaned log data.
-
-    Raises:
-        Exception: If there is an error reading the log file.
-    """
-    rows = []
-    try:
-        with open(logpath, errors='ignore') as f:
-            for line in f:
-                rec = parse_log_line(line, domain)
-                if rec and rec['dt'] >= start_date:
-                    rows.append(rec)
-    except Exception as e:
-        logging.error("Failed to read log file: %s", e)
-        raise
-
-    df = pd.DataFrame(rows)
-    df.sort_values('dt', inplace=True)
-    df['url'] = df['url'].str.replace(r'index\.html$', '', regex=True)
-    return df
-
-
-def identify_sessions(df: pd.DataFrame) -> Tuple[pd.DataFrame, pd.DataFrame]:
-    """
-    Identify sessions based on IP addresses and a 30-minute inactivity threshold.
-
-    Args:
-        df (pd.DataFrame): The cleaned log data.
-
-    Returns:
-        Tuple[pd.DataFrame, pd.DataFrame]: A tuple containing (session_summary, enriched_df)
-            - session_summary: DataFrame with session-level aggregations
-            - enriched_df: Original df enriched with session information
-    """
-    df['prev'] = df.groupby('ip')['dt'].shift()
-    df['gap_m'] = (df['dt'] - df['prev']).dt.total_seconds().div(60).fillna(31)
-    df['new_sess'] = df['gap_m'] > 30
-    df['sess_id'] = df.groupby('ip')['new_sess'].cumsum().astype(
-        str).radd(df['ip'] + '_')
-
-    # Create session summary
-    sess_summary = df.groupby('sess_id').agg({
-        'dt': ['min', 'max'],
-        'ip': 'first',
-        'url': 'first',  # Landing page (first URL in session)
-        'ref': 'first',   # Session referrer (first referrer in session)
-        'ua': 'first',    # User agent (first user agent in session)
-        'method': 'first'  # Method (first method in session)
-    }).reset_index()
-
-    # Flatten column names
-    sess_summary.columns = ['sess_id', 'start', 'end',
-                            'ip', 'landing_page', 'referrer', 'ua', 'method']
-    sess_summary['duration'] = (
-        sess_summary['end'] - sess_summary['start']).dt.total_seconds().div(60)
-
-    return sess_summary, df
-
-
-def filter_sessions(sess_summary: pd.DataFrame, domain: str) -> pd.DataFrame:
-    """
-    Filter out sessions that are identified as bots or suspicious.
-
-    Args:
-        sess_summary (pd.DataFrame): The session summary data.
-        domain (str): The domain to exclude from referrers.
-
-    Returns:
-        pd.DataFrame: The filtered session summary data.
-    """
-    filtered_sessions = sess_summary[~sess_summary.apply(
-        lambda row: is_bot_or_suspicious(
-            row['ua'], row['referrer'], domain, row['landing_page'], row['method']),
-        axis=1
-    )]
-    return filtered_sessions
+    return user_sessions
 
 
 def ensure_dirs(base: str = 'output', period: str = 'w') -> Tuple[str, str, str]:
-    """
-    Ensure that the necessary directories exist for storing output files, creating them if necessary.
-
-    Args:
-        base (str): The base directory for output files.
-        period (str): The period for which directories are created (e.g., 'w' for weekly, 'm' for monthly).
-
-    Returns:
-        Tuple[str, str, str]: A tuple containing the base directory, folder name, and image directory.
-    """
     now = datetime.now()
     if period == 'w':
         fld = f"w-{now:%Y-%m-%d}"
@@ -386,17 +267,6 @@ def ensure_dirs(base: str = 'output', period: str = 'w') -> Tuple[str, str, str]
 
 
 def save_plotly(fig: go.Figure, out_dir: str, fname: str) -> None:
-    """
-    Save a Plotly figure as an image file with consistent styling.
-
-    Args:
-        fig (go.Figure): The Plotly figure to save.
-        out_dir (str): The directory where the image file will be saved.
-        fname (str): The name of the image file.
-
-    Raises:
-        Exception: If there is an error saving the Plotly figure.
-    """
     fig.update_layout(
         template='plotly_white',
         margin=dict(t=40, b=20, l=30, r=20),
@@ -409,25 +279,21 @@ def save_plotly(fig: go.Figure, out_dir: str, fname: str) -> None:
         raise
 
 
-def generate_visualizations(sess: pd.DataFrame, df: pd.DataFrame, img_dir: str, domain: str) -> Dict[str, Any]:
-    """
-    Generate session-based visualizations from session data, saving them as image files.
+def generate_visualizations(user_sessions: List[Tuple[str, List[Dict]]], img_dir: str, domain: str) -> Dict[str, Any]:
+    total_visits = len(user_sessions)
+    unique_ips = len(set(ip for ip, _ in user_sessions))
 
-    Args:
-        sess (pd.DataFrame): The session summary data.
-        df_enriched (pd.DataFrame): The enriched log data with session information.
-        img_dir (str): The directory where the generated images will be saved.
-        domain (str): The domain to exclude from referrers.
+    session_durations = [
+        (session[-1]['timestamp'] - session[0]
+         ['timestamp']).total_seconds() / 60
+        for _, session in user_sessions
+    ]
+    avg_len = statistics.mean(session_durations) if session_durations else 0
 
-    Returns:
-        Dict[str, Any]: A dictionary containing data for the HTML template.
-    """
-    total_visits = len(sess)
-    unique_ips = sess['ip'].nunique()
-    avg_len = sess['duration'].mean()
+    session_starts = [session[0]['timestamp'] for _, session in user_sessions]
+    session_start_df = pd.DataFrame({'start': session_starts})
 
-    # Sessions by Day of Week (session-based)
-    dow = sess['start'].dt.day_name().value_counts().reindex(
+    dow = session_start_df['start'].dt.day_name().value_counts().reindex(
         ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']).fillna(0)
     fig = px.bar(
         x=dow.index, y=dow.values,
@@ -438,15 +304,11 @@ def generate_visualizations(sess: pd.DataFrame, df: pd.DataFrame, img_dir: str, 
     )
     save_plotly(fig, img_dir, "sessions_dow.png")
 
-    # Top 5 Landing Pages (session-based)
-    landing_pages = df['url'].copy()
-    landing_pages = landing_pages[
-        landing_pages.str.endswith('.html') |
-        landing_pages.str.endswith('/') |
-        (landing_pages == '')
-    ]
-    landing_pages = landing_pages.str.replace(r'index\.html$', '', regex=True)
-    top5_pages = landing_pages.value_counts().iloc[:5]
+    # Count top 5 most visited pages (not just landing pages)
+    all_pages = [line['url'] for _, session in user_sessions for line in session]
+    all_pages = [url.replace('index.html', '') for url in all_pages if "api" not in url]
+    all_pages_series = pd.Series(all_pages)
+    top5_pages = all_pages_series.value_counts().iloc[:5]
 
     fig = px.bar(
         x=top5_pages.values, y=top5_pages.index,
@@ -458,20 +320,33 @@ def generate_visualizations(sess: pd.DataFrame, df: pd.DataFrame, img_dir: str, 
     )
     save_plotly(fig, img_dir, "top5_pages.png")
 
-    # Avg. Session Duration by Day (session-based)
-    avg_by_dow = sess.groupby(sess['start'].dt.day_name())['duration'].mean().reindex(
-        ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']).fillna(0)
+    durations_by_dow = {}
+    for _, session in user_sessions:
+        day_name = session[0]['timestamp'].strftime('%A')
+        duration = (session[-1]['timestamp'] - session[0]
+                    ['timestamp']).total_seconds() / 60
+        if day_name not in durations_by_dow:
+            durations_by_dow[day_name] = []
+        durations_by_dow[day_name].append(duration)
+
+    avg_by_dow = {day: statistics.mean(durations)
+                  for day, durations in durations_by_dow.items()}
+    dow_order = ['Monday', 'Tuesday', 'Wednesday',
+                 'Thursday', 'Friday', 'Saturday', 'Sunday']
+    avg_by_dow_ordered = [avg_by_dow.get(day, 0) for day in dow_order]
+
     fig = px.bar(
-        x=avg_by_dow.index, y=avg_by_dow.values,
+        x=dow_order, y=avg_by_dow_ordered,
         labels={'x': 'Day', 'y': 'Avg Duration (min)'},
         title="Avg Session Length by Weekday",
-        color=avg_by_dow.values,
+        color=avg_by_dow_ordered,
         color_continuous_scale=px.colors.sequential.Blues
     )
     save_plotly(fig, img_dir, "avg_len_dow.png")
 
-    # Sessions by Hour of Day (session-based)
-    hrs = sess['start'].dt.hour.value_counts().sort_index()
+    session_hours = [session[0]['timestamp'].hour for _,
+                     session in user_sessions]
+    hrs = pd.Series(session_hours).value_counts().sort_index()
     fig = px.bar(
         x=hrs.index, y=hrs.values,
         labels={'x': 'Hour of Day', 'y': 'Sessions'},
@@ -481,13 +356,15 @@ def generate_visualizations(sess: pd.DataFrame, df: pd.DataFrame, img_dir: str, 
     )
     save_plotly(fig, img_dir, "sessions_by_hour.png")
 
-    # Top 5 External Referrers (session-based)
-    ext_referrers = sess.loc[(sess['referrer'] != '-') &
-                             (~sess['referrer'].str.contains(domain, na=False)), 'referrer']
-    ext_ref_counts = ext_referrers.value_counts().iloc[:5]
-    top5_ref = list(ext_ref_counts.items())
+    ext_referrers = []
+    for _, session in user_sessions:
+        referrer = session[0]['referrer']
+        if referrer != '-' and domain not in referrer:
+            ext_referrers.append(referrer)
 
-    # Top 5 Countries (session-based, using GeoIP on session IPs)
+    ext_ref_counts = pd.Series(ext_referrers).value_counts().iloc[:5]
+    top5_ref = list(ext_ref_counts.items()) if not ext_ref_counts.empty else []
+
     reader = geoip2.database.Reader(LOCAL_GEO_DB)
 
     def lookup_country(ip: str) -> str:
@@ -496,10 +373,10 @@ def generate_visualizations(sess: pd.DataFrame, df: pd.DataFrame, img_dir: str, 
         except geoip2.errors.AddressNotFoundError:
             return 'Unknown'
 
-    sess['country'] = sess['ip'].apply(lookup_country)
+    countries = [lookup_country(ip) for ip, _ in user_sessions]
     reader.close()
 
-    cc = sess['country'].value_counts()
+    cc = pd.Series(countries).value_counts()
     top5c = cc.iloc[:5]
     fig = px.bar(
         x=top5c.index, y=top5c.values,
@@ -519,18 +396,6 @@ def generate_visualizations(sess: pd.DataFrame, df: pd.DataFrame, img_dir: str, 
 
 
 def generate_html(template_data: Dict[str, Any], base_url: str, domain: str, output_path: str) -> None:
-    """
-    Generate an HTML dashboard from the template data and save it to a file.
-
-    Args:
-        template_data (Dict[str, Any]): The data to render in the HTML template.
-        base_url (str): The base URL for the images.
-        domain (str): The domain to exclude from referrers.
-        output_path (str): The path where the generated HTML file will be saved.
-
-    Raises:
-        Exception: If there is an error generating the HTML file.
-    """
     try:
         with open(output_path, "w", encoding="utf-8") as f:
             tpl = Template(HTML_TEMPLATE)
@@ -546,10 +411,6 @@ def generate_html(template_data: Dict[str, Any], base_url: str, domain: str, out
 
 
 def main() -> None:
-    """
-    Main function to analyze website traffic and generate a session-based dashboard.
-    This function orchestrates the entire process from log parsing to HTML generation.
-    """
     setup_logging()
     parser = argparse.ArgumentParser(
         description="Analyze website traffic (session-based)")
@@ -560,7 +421,6 @@ def main() -> None:
         '--period', choices=['w', 'm', 'y'], default='w', help="w=weekly, m=monthly, y=yearly")
     args = parser.parse_args()
 
-    # Calculate start date based on the period
     now = datetime.now(timezone.utc)
     if args.period == 'w':
         start_date = now - timedelta(days=7)
@@ -577,15 +437,14 @@ def main() -> None:
     raw_base = "https://raw.githubusercontent.com/L-Yvelin/loucantou/refs/heads/main/output"
     base_url = f"{raw_base}/{folder}/images"
 
-    df = load_and_clean(args.logpath, args.domain, start_date)
-    sess, df_enriched = identify_sessions(df)
-    sess = filter_sessions(sess, args.domain)
+    user_sessions = load_and_process_sessions(
+        args.logpath, args.domain, start_date)
 
     logging.info(
-        f"Processed {len(df)} log entries into {len(sess)} sessions from {sess['ip'].nunique()} unique IPs")
+        f"Found {len(user_sessions)} sessions from {len(set(ip for ip, _ in user_sessions))} unique IPs")
 
     template_data = generate_visualizations(
-        sess, df, img_dir, args.domain)
+        user_sessions, img_dir, args.domain)
 
     html_out = os.path.join(base, folder, "dashboard.html")
     generate_html(template_data, base_url, args.domain, html_out)
