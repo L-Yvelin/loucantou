@@ -1,4 +1,4 @@
-name: Weekly Log Analysis
+name: Monthly Log Analysis
 
 on:
   schedule:
@@ -68,7 +68,7 @@ jobs:
           server_port: 587
           username: ${{ secrets.SMTP_USER }}
           password: ${{ secrets.SMTP_PASSWORD }}
-          subject: Weekly Log Analysis
+          subject: Monthly Log Analysis
           from: Lou Cantou
           to: louisyvelin@gmail.com
           html_body: file://${{ steps.get_html.outputs.html_file }}

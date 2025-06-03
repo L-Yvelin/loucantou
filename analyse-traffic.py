@@ -299,7 +299,6 @@ def generate_visualizations(user_sessions: List[Tuple[str, List[Dict]]], img_dir
     fig = px.bar(
         x=dow.index, y=dow.values,
         labels={'x': 'Day', 'y': 'Sessions'},
-        title="Most visited days",
         color=dow.values,
         color_continuous_scale=px.colors.sequential.Blues
     )
@@ -308,13 +307,12 @@ def generate_visualizations(user_sessions: List[Tuple[str, List[Dict]]], img_dir
     session_hours = [session[0]['timestamp'].hour for _,
                      session in user_sessions]
     hrs = pd.Series(session_hours).value_counts().sort_index()
-    fig = px.bar(
+
+    fig = px.line(
         x=hrs.index, y=hrs.values,
         labels={'x': 'Hour of Day', 'y': 'Sessions'},
-        title="At what hour do people visit",
-        color=hrs.values,
-        color_continuous_scale=px.colors.sequential.Blues
     )
+
     save_plotly(fig, img_dir, "sessions_by_hour.png")
 
     ext_referrers = []
@@ -342,7 +340,6 @@ def generate_visualizations(user_sessions: List[Tuple[str, List[Dict]]], img_dir
     fig = px.bar(
         x=top5c.index, y=top5c.values,
         labels={'x': 'Country', 'y': 'Sessions'},
-        title="Most represented countries",
         color=top5c.values,
         color_continuous_scale=px.colors.sequential.Blues
     )
