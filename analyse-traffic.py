@@ -8,6 +8,7 @@ import math
 from datetime import datetime, timedelta, timezone
 import urllib.request
 from typing import Optional, List, Tuple, Dict, Any
+from collections import Counter
 
 import pandas as pd
 from user_agents import parse as parse_ua
@@ -148,9 +149,6 @@ HTML_TEMPLATE = """<!DOCTYPE html>
 
   <h2>Sessions by Day of Week</h2>
   <img src="{{ base_url }}/sessions_dow.png" alt="Sessions per weekday" loading="lazy" />
-
-  <h2>Top 5 Landing Pages</h2>
-  <img src="{{ base_url }}/top5_pages.png" alt="Top landing pages" loading="lazy" />
 
   <h2>Avg. Session Duration by Day</h2>
   <img src="{{ base_url }}/avg_len_dow.png" alt="Avg session length per weekday" loading="lazy" />
@@ -309,23 +307,6 @@ def generate_visualizations(user_sessions: List[Tuple[str, List[Dict]]], img_dir
         color_continuous_scale=px.colors.sequential.Blues
     )
     save_plotly(fig, img_dir, "sessions_dow.png")
-
-    all_pages = [line['url'].replace('index.html', '')
-                 for _, session in user_sessions for line in session if line['url'].endswith('.html') or line['url'].endswith('/')]
-    all_pages = [url.replace('index.html', '') for url in all_pages]
-    all_pages_series = pd.Series(all_pages)
-    print("Found following pages:", all_pages_series.unique())
-    top5_pages = all_pages_series.value_counts().iloc[:5]
-
-    fig = px.bar(
-        x=top5_pages.values, y=top5_pages.index,
-        orientation='h',
-        labels={'x': 'Sessions', 'y': 'Landing Page'},
-        title="Top 5 Landing Pages",
-        color=top5_pages.values,
-        color_continuous_scale=px.colors.sequential.Blues
-    )
-    save_plotly(fig, img_dir, "top5_pages.png")
 
     durations_by_dow = {}
     for _, session in user_sessions:
