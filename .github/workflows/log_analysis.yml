@@ -2,7 +2,7 @@ name: Monthly Log Analysis
 
 on:
   schedule:
-    - cron: "0 3 1 * *"
+    - cron: "0 12 1 * *"
   workflow_dispatch:
 
 permissions:
@@ -70,9 +70,8 @@ jobs:
           password: ${{ secrets.SMTP_PASSWORD }}
           subject: Loucantou Monthly Analysis
           from: Lou Cantou
-          to: louisyvelin@gmail.com
+          to: louisyvelin34720@gmail.com, andrea.kutzke@wanadoo.fr, lantiponneur@gmail.com
           html_body: file://${{ steps.get_html.outputs.html_file }}
-          cc: andrea.kutzke@wanadoo.fr
 
       - name: Commit and push results
         env:
