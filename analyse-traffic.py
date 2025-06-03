@@ -212,6 +212,12 @@ def load_and_process_sessions(logpath: str, domain: str, start_date: datetime) -
                 continue
 
             data = match.groupdict()
+            data['url'] = data['url'].split('?', 1)[0]
+            data['referrer'] = data['referrer'].split('?', 1)[0]
+
+            if '/logs/' in data['url'] or '/logs/' in data['referrer']:
+                continue
+
             try:
                 dt = datetime.strptime(
                     data['timestamp'], '%d/%b/%Y:%H:%M:%S %z')
@@ -304,10 +310,11 @@ def generate_visualizations(user_sessions: List[Tuple[str, List[Dict]]], img_dir
     )
     save_plotly(fig, img_dir, "sessions_dow.png")
 
-    # Count top 5 most visited pages (not just landing pages)
-    all_pages = [line['url'] for _, session in user_sessions for line in session]
-    all_pages = [url.replace('index.html', '') for url in all_pages if "api" not in url]
+    all_pages = [line['url'].replace('index.html', '')
+                 for _, session in user_sessions for line in session if line['url'].endswith('.html') or line['url'].endswith('/')]
+    all_pages = [url.replace('index.html', '') for url in all_pages]
     all_pages_series = pd.Series(all_pages)
+    print("Found following pages:", all_pages_series.unique())
     top5_pages = all_pages_series.value_counts().iloc[:5]
 
     fig = px.bar(
