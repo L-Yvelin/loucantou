@@ -2,7 +2,7 @@ name: Weekly Log Analysis
 
 on:
   schedule:
-    - cron: "0 3 * * 1" # Every Monday at 03:00 UTC
+    - cron: "0 3 1 * *"
   workflow_dispatch:
 
 permissions:
@@ -39,7 +39,7 @@ jobs:
 
       - name: Run traffic analysis
         run: |
-          python analyse-traffic.py --period w --logpath loucantou-access.log --domain loucantou.yvelin.net
+          python analyse-traffic.py --period m --logpath loucantou-access.log --domain loucantou.yvelin.net
 
       - name: Add HTML file to Git
         run: |

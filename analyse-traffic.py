@@ -147,16 +147,13 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     </div>
   </div>
 
-  <h2>Sessions by Day of Week</h2>
-  <img src="{{ base_url }}/sessions_dow.png" alt="Sessions per weekday" loading="lazy" />
+  <h2>Most visited days</h2>
+  <img src="{{ base_url }}/sessions_dow.png" alt="Most visited days" loading="lazy" />
 
-  <h2>Avg. Session Duration by Day</h2>
-  <img src="{{ base_url }}/avg_len_dow.png" alt="Avg session length per weekday" loading="lazy" />
+  <h2>At what hour do people visit</h2>
+  <img src="{{ base_url }}/sessions_by_hour.png" alt="At what hour do people visit" loading="lazy" />
 
-  <h2>Sessions by Hour of Day</h2>
-  <img src="{{ base_url }}/sessions_by_hour.png" alt="Sessions by hour" loading="lazy" />
-
-  <h2>Top 5 External Referrers</h2>
+  <h2>People come from these websites</h2>
   <table class="table">
     <thead><tr><th>Referrer URL</th><th>Sessions</th></tr></thead>
     <tbody>
@@ -166,8 +163,8 @@ HTML_TEMPLATE = """<!DOCTYPE html>
     </tbody>
   </table>
 
-  <h2>Top 5 Countries</h2>
-  <img src="{{ base_url }}/top5_countries.png" alt="Top countries" loading="lazy" />
+  <h2>Most represented countries</h2>
+  <img src="{{ base_url }}/top5_countries.png" alt="Most represented countries" loading="lazy" />
 
   <p class="small">
     * GeoIP via MaxMind GeoLite2 (free).<br />
@@ -302,35 +299,11 @@ def generate_visualizations(user_sessions: List[Tuple[str, List[Dict]]], img_dir
     fig = px.bar(
         x=dow.index, y=dow.values,
         labels={'x': 'Day', 'y': 'Sessions'},
-        title="Sessions per Weekday",
+        title="Most visited days",
         color=dow.values,
         color_continuous_scale=px.colors.sequential.Blues
     )
     save_plotly(fig, img_dir, "sessions_dow.png")
-
-    durations_by_dow = {}
-    for _, session in user_sessions:
-        day_name = session[0]['timestamp'].strftime('%A')
-        duration = (session[-1]['timestamp'] - session[0]
-                    ['timestamp']).total_seconds() / 60
-        if day_name not in durations_by_dow:
-            durations_by_dow[day_name] = []
-        durations_by_dow[day_name].append(duration)
-
-    avg_by_dow = {day: statistics.mean(durations)
-                  for day, durations in durations_by_dow.items()}
-    dow_order = ['Monday', 'Tuesday', 'Wednesday',
-                 'Thursday', 'Friday', 'Saturday', 'Sunday']
-    avg_by_dow_ordered = [avg_by_dow.get(day, 0) for day in dow_order]
-
-    fig = px.bar(
-        x=dow_order, y=avg_by_dow_ordered,
-        labels={'x': 'Day', 'y': 'Avg Duration (min)'},
-        title="Avg Session Length by Weekday",
-        color=avg_by_dow_ordered,
-        color_continuous_scale=px.colors.sequential.Blues
-    )
-    save_plotly(fig, img_dir, "avg_len_dow.png")
 
     session_hours = [session[0]['timestamp'].hour for _,
                      session in user_sessions]
@@ -338,7 +311,7 @@ def generate_visualizations(user_sessions: List[Tuple[str, List[Dict]]], img_dir
     fig = px.bar(
         x=hrs.index, y=hrs.values,
         labels={'x': 'Hour of Day', 'y': 'Sessions'},
-        title="Sessions by Hour of Day",
+        title="At what hour do people visit",
         color=hrs.values,
         color_continuous_scale=px.colors.sequential.Blues
     )
@@ -369,7 +342,7 @@ def generate_visualizations(user_sessions: List[Tuple[str, List[Dict]]], img_dir
     fig = px.bar(
         x=top5c.index, y=top5c.values,
         labels={'x': 'Country', 'y': 'Sessions'},
-        title="Top 5 Visitor Countries",
+        title="Most represented countries",
         color=top5c.values,
         color_continuous_scale=px.colors.sequential.Blues
     )
