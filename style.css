@@ -153,6 +153,7 @@ p br {
   font-size: 20px;
   border-radius: 25px;
   align-self: stretch;
+  min-width: 200px;
 }
 
 .main-button .icon {
@@ -229,7 +230,8 @@ p br {
   font-weight: 400;
   margin: 0;
   font-size: 40px;
-  line-height: 0;
+  line-height: 1em;
+  transform: translateY(50%);
 }
 
 .section .title img {
@@ -410,25 +412,28 @@ footer .separator {
   flex-grow: 0;
   flex-basis: max-content;
   font-weight: 400;
-  line-height: min(6vw, 40px);
-  transform: translateY(25%);
+  line-height: 1;
+  transform: translateY(50%);
 }
 
 .page-indicator .multiline {
+  height: unset;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  flex-grow: 0;
-  flex-basis: max-content;
-  line-height: 0.8;
+  gap: 0.5em;
 }
 
 .page-indicator .multiline span:not(:first-child) {
-  margin-left: auto;
+  margin-left: 59%;
 }
 
 .page-indicator .multiline span:first-child {
   margin-right: 3em;
+}
+
+#reserver #oranger .room-details {
+  flex-direction: row-reverse;
 }
 
 .section {
@@ -488,7 +493,7 @@ footer .separator {
 }
 
 .room-details .room-card .content .title h2 {
-  font-size: 20px;
+  font-size: 24px;
 }
 
 .room-details .room-card .content .title img {
@@ -556,8 +561,8 @@ fieldset {
 }
 
 .radio-button span {
-  transform: translateY(15%);
-  line-height: 32px;
+  transform: translateY(18%);
+  line-height: 1;
 }
 
 .radio-button input {
