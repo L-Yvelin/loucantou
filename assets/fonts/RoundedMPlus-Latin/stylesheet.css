@@ -1,0 +1,63 @@
+@font-face {
+    font-family: 'Rounded Mplus 1c';
+    src: local('Rounded Mplus 1c Light'), local('RoundedMplus1c-Light'),
+        url('RoundedMplus1c-Light.woff2') format('woff2');
+    font-weight: 300;
+    font-style: normal;
+    font-display: fallback;
+}
+
+@font-face {
+    font-family: 'Rounded Mplus 1c';
+    src: local('Rounded Mplus 1c Black'), local('RoundedMplus1c-Black'),
+        url('RoundedMplus1c-Black.woff2') format('woff2');
+    font-weight: 900;
+    font-style: normal;
+    font-display: fallback;
+}
+
+@font-face {
+    font-family: 'Rounded Mplus 1c';
+    src: local('Rounded Mplus 1c Bold'), local('RoundedMplus1c-Bold'),
+        url('RoundedMplus1c-Bold.woff2') format('woff2');
+    font-weight: bold;
+    font-style: normal;
+    font-display: fallback;
+}
+
+@font-face {
+    font-family: 'Rounded Mplus 1c';
+    src: local('Rounded Mplus 1c'), local('RoundedMplus1c-Regular'),
+        url('RoundedMplus1c-Regular.woff2') format('woff2');
+    font-weight: normal;
+    font-style: normal;
+    font-display: fallback;
+}
+
+@font-face {
+    font-family: 'Rounded Mplus 1c';
+    src: local('Rounded Mplus 1c Medium'), local('RoundedMplus1c-Medium'),
+        url('RoundedMplus1c-Medium.woff2') format('woff2');
+    font-weight: 500;
+    font-style: normal;
+    font-display: fallback;
+}
+
+@font-face {
+    font-family: 'Rounded Mplus 1c';
+    src: local('Rounded Mplus 1c Thin'), local('RoundedMplus1c-Thin'),
+        url('RoundedMplus1c-Thin.woff2') format('woff2');
+    font-weight: 100;
+    font-style: normal;
+    font-display: fallback;
+}
+
+@font-face {
+    font-family: 'Rounded Mplus 1c';
+    src: local('Rounded Mplus 1c ExtraBold'), local('RoundedMplus1c-ExtraBold'),
+        url('RoundedMplus1c-ExtraBold.woff2') format('woff2');
+    font-weight: bold;
+    font-style: normal;
+    font-display: fallback;
+}
+
