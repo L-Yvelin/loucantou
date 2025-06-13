@@ -1,7 +1,75 @@
 @font-face {
+  font-family: "Rounded Mplus 1c";
+  src: local("Rounded Mplus 1c Medium"), local("RoundedMplus1c-Medium"),
+    url("/assets/fonts/RoundedMPlus/RoundedMplus1c-Medium.woff2")
+      format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: fallback;
+}
+
+@font-face {
+  font-family: "Rounded Mplus 1c";
+  src: local("Rounded Mplus 1c ExtraBold"), local("RoundedMplus1c-ExtraBold"),
+    url("/assets/fonts/RoundedMPlus/RoundedMplus1c-ExtraBold.woff2")
+      format("woff2");
+  font-weight: 800;
+  font-style: normal;
+  font-display: fallback;
+}
+
+@font-face {
+  font-family: "Rounded Mplus 1c";
+  src: local("Rounded Mplus 1c Thin"), local("RoundedMplus1c-Thin"),
+    url("/assets/fonts/RoundedMPlus/RoundedMplus1c-Thin.woff2") format("woff2");
+  font-weight: 100;
+  font-style: normal;
+  font-display: fallback;
+}
+
+@font-face {
+  font-family: "Rounded Mplus 1c";
+  src: local("Rounded Mplus 1c Black"), local("RoundedMplus1c-Black"),
+    url("/assets/fonts/RoundedMPlus/RoundedMplus1c-Black.woff2") format("woff2");
+  font-weight: 900;
+  font-style: normal;
+  font-display: fallback;
+}
+
+@font-face {
+  font-family: "Rounded Mplus 1c";
+  src: local("Rounded Mplus 1c Light"), local("RoundedMplus1c-Light"),
+    url("/assets/fonts/RoundedMPlus/RoundedMplus1c-Light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: fallback;
+}
+
+@font-face {
+  font-family: "Rounded Mplus 1c";
+  src: local("Rounded Mplus 1c"), local("RoundedMplus1c-Regular"),
+    url("/assets/fonts/RoundedMPlus/RoundedMplus1c-Regular.woff2")
+      format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: fallback;
+}
+
+@font-face {
+  font-family: "Rounded Mplus 1c";
+  src: local("Rounded Mplus 1c Bold"), local("RoundedMplus1c-Bold"),
+    url("/assets/fonts/RoundedMPlus/RoundedMplus1c-Bold.woff2") format("woff2");
+  font-weight: bold;
+  font-style: normal;
+  font-display: fallback;
+}
+
+@font-face {
   font-family: "Borel";
-  src: url("/assets/fonts/Borel-Regular.otf");
-  font-style: cursive;
+  src: local("Borel Regular"), local("Borel-Regular"),
+    url("/assets/fonts/Borel-Regular/Borel-Regular.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
   font-display: fallback;
 }
 
@@ -24,7 +92,7 @@ a {
 }
 
 html {
-  font-family: "M PLUS Rounded 1c", sans-serif;
+  font-family: "Rounded Mplus 1c", sans-serif;
   font-weight: 400;
   font-style: normal;
   scroll-behavior: smooth;
@@ -226,7 +294,7 @@ p br {
 }
 
 .section .title h2 {
-  font-family: "Borel", cursive;
+  font-family: "Borel";
   font-weight: 400;
   margin: 0;
   font-size: 40px;
@@ -407,7 +475,7 @@ footer .separator {
 }
 
 .page-indicator .title {
-  font-family: "Borel", cursive;
+  font-family: "Borel";
   font-size: min(6vw, 40px);
   flex-grow: 0;
   flex-basis: max-content;
@@ -555,7 +623,7 @@ fieldset {
 }
 
 .radio-button {
-  font-family: "Borel", cursive;
+  font-family: "Borel";
   display: flex;
   align-items: center;
 }
