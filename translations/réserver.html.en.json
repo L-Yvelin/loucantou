@@ -15,7 +15,7 @@
   "header .retourner a@href": "../en/",
   "main .page-indicator .title": "book",
   "main .section p": "Please don't hesitate to contact me at <a href=\"mailto:andrea.kutzke@wanadoo.fr\">andrea.kutzke@wanadoo.fr</a>, or through the form at the bottom of the page.",
-  ".contacts .addresse": "Andrea Kutzke<br />3 Avenue Jean Jaurès, 34720 CAUX",
+  ".contacts .addresse": "Andrea Kutzke Yvelin<br />3 Avenue Jean Jaurès, 34720 CAUX",
   ".contacts .telephones span:nth-child(1)": "Home phone: <nobr><a href=\"tel:+33467908748\">04 . 67 . 90 . 87 . 48</a></nobr>",
   ".contacts .telephones span:nth-child(2)": "Mobile phone: <nobr><a href=\"tel:+33617934139\">06 . 17 . 93 . 41 . 39</a></nobr>",
   "#olivier h2": "The Olive Tree",
