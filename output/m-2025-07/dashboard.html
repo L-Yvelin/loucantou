@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Loucantou traffic recap</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      max-width: 900px;
+      margin: auto;
+      padding: 1rem;
+      background: #f8f9fa;
+      color: #333;
+    }
+    h1, h2 {
+      font-weight: 700;
+      color: #2c3e50;
+      margin-bottom: 0.5rem;
+    }
+    .summary {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .summary .card {
+      flex: 1 1 200px;
+      background: #fff;
+      color: #2c3e50;
+      padding: 1.2rem 1.5rem;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      min-height: 120px;
+    }
+    .summary .card .value {
+      font-size: 2rem;
+      font-weight: 900;
+      margin-top: 0.2rem;
+    }
+    img {
+      max-width: 100%;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1.5rem;
+    }
+    table {
+      width: 100%;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 1.5rem;
+      background: #fff;
+    }
+    th, td {
+      padding: 0.75rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid #e9ecef;
+    }
+    thead th {
+      background: #2c3e50;
+      color: white;
+      font-weight: 700;
+      font-size: 1rem;
+    }
+    tbody tr:nth-child(even) td {
+      background: #f8f9fa;
+    }
+    tbody tr:hover td {
+      background: #e9ecef;
+    }
+    a {
+      color: #3498db;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    p.small {
+      font-size: 0.85rem;
+      color: #7f8c8d;
+      margin-top: 2rem;
+      text-align: center;
+    }
+    @media (max-width: 576px) {
+      .summary {
+        flex-direction: column;
+      }
+      .summary .card {
+        flex: unset;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1 class="mb-4">Loucantou traffic recap <small class="text-muted">(2025-07-01 12:26)</small></h1>
+
+  <div class="summary">
+    <div class="card">
+      <div>Total Sessions</div>
+      <div class="value">183</div>
+    </div>
+    <div class="card">
+      <div>Unique Visitors</div>
+      <div class="value">51</div>
+    </div>
+    <div class="card">
+      <div>Avg. Session Duration</div>
+      <div class="value">6.1 min</div>
+    </div>
+  </div>
+
+  <h2>Most visited days</h2>
+  <img src="https://raw.githubusercontent.com/L-Yvelin/loucantou/refs/heads/main/output/m-2025-07/images/sessions_dow.png" alt="Most visited days" loading="lazy" />
+
+  <h2>At what hour do people visit</h2>
+  <img src="https://raw.githubusercontent.com/L-Yvelin/loucantou/refs/heads/main/output/m-2025-07/images/sessions_by_hour.png" alt="At what hour do people visit" loading="lazy" />
+
+  <h2>People come from these websites</h2>
+  <table class="table">
+    <thead><tr><th>Referrer URL</th><th>Sessions</th></tr></thead>
+    <tbody>
+    
+      <tr><td><a href="https://www.google.com/" target="_blank" rel="noopener">https://www.google.com/</a></td><td>22</td></tr>
+    
+      <tr><td><a href="http://loucantou1.free.fr/" target="_blank" rel="noopener">http://loucantou1.free.fr/</a></td><td>13</td></tr>
+    
+      <tr><td><a href="https://duckduckgo.com/" target="_blank" rel="noopener">https://duckduckgo.com/</a></td><td>5</td></tr>
+    
+      <tr><td><a href="https://www.google.fr/" target="_blank" rel="noopener">https://www.google.fr/</a></td><td>5</td></tr>
+    
+      <tr><td><a href="http://176.146.197.0:80/" target="_blank" rel="noopener">http://176.146.197.0:80/</a></td><td>4</td></tr>
+    
+    </tbody>
+  </table>
+
+  <h2>Countries Distribution</h2>
+  <h3 class="value">France represents 29.5% of the visits</h3>
+  <p>The remaining is:</p>
+  <img src="https://raw.githubusercontent.com/L-Yvelin/loucantou/refs/heads/main/output/m-2025-07/images/countries_pie_excluding_france.png" alt="Countries Distribution" loading="lazy" />
+
+  <p class="small">
+    * GeoIP via MaxMind GeoLite2 (free).<br />
+    * Bots filtered out; your domain "loucantou.yvelin.net" excluded from referrers.<br />
+    * All metrics are session-based (30-minute timeout).
+  </p>
+</body>
+</html>
