@@ -20,16 +20,9 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
 
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;900&display=fallback"
-      rel="stylesheet"
-    />
-
     <!-- CSS -->
-    <link rel="stylesheet" href="/style.css?v=2" />
+    <link rel="preload" href="/style.css?v=4" as="style" />
+    <link rel="stylesheet" href="/style.css?v=4" />
 
     <!-- Social Meta Tags -->
     <meta
@@ -139,51 +132,54 @@
 
       <section class="section" id="olivier">
         <div class="room-details">
-          <div class="room-card">
-            <div class="content">
-              <div class="title">
-                <img
-                  src="/assets/icons/olive.svg"
-                  alt=""
-                  style="width: 20px; aspect-ratio: 45/67"
-                />
-                <h2>l'olivier</h2>
-                <div class="line olivier"></div>
+          <div class="room-card-wrapper">
+            <div class="room-card">
+              <div class="content">
+                <div class="title">
+                  <img
+                    src="/assets/icons/olive.svg"
+                    alt=""
+                    style="width: 20px; aspect-ratio: 45/67"
+                  />
+                  <h2>l'olivier</h2>
+                  <div class="line olivier"></div>
+                </div>
+                <p class="infos">
+                  <strong>80€/nuit pour 1 à 2 personnes</strong><br />
+                  (petit déjeuner compris)<br />
+                  +15€ par personne supplémentaire
+                </p>
               </div>
-              <p class="infos">
-                <strong>80€/nuit pour 1 à 2 personnes</strong><br />
-                (petit déjeuner compris)<br />
-                +15€ par personne supplémentaire
-              </p>
+              <div class="inside-image">
+                <img
+                  alt="Chambre Olivier"
+                  src="/assets/photos/used/optimized/211014_PLC_0048-1200.webp"
+                  srcset="
+                    /assets/photos/used/optimized/211014_PLC_0048-360.webp   360w,
+                    /assets/photos/used/optimized/211014_PLC_0048-540.webp   540w,
+                    /assets/photos/used/optimized/211014_PLC_0048-720.webp   720w,
+                    /assets/photos/used/optimized/211014_PLC_0048-960.webp   960w,
+                    /assets/photos/used/optimized/211014_PLC_0048-1200.webp 1200w,
+                    /assets/photos/used/optimized/211014_PLC_0048-1440.webp 1440w,
+                    /assets/photos/used/optimized/211014_PLC_0048-1800.webp 1800w,
+                    /assets/photos/used/optimized/211014_PLC_0048-2400.webp 2400w
+                  "
+                  sizes="(max-width: 500px) calc(100vw - 50px), (max-width: 800px) calc(100vw - 80px), (max-width: 1000px) calc(100vw - 200px), calc((100vw - 260px) / 2)"
+                />
+              </div>
+              <a
+                href="/#olivier"
+                class="olivier button"
+                aria-label="En voir davantages de la chambre Olivier"
+              >
+                EN SAVOIR PLUS
+                <img
+                  class="arrow-right"
+                  src="/assets/icons/arrow-right.svg"
+                  alt=""
+                />
+              </a>
             </div>
-            <div class="inside-image">
-              <img
-                alt="Chambre Olivier"
-                src="/assets/photos/used/optimized/211014_PLC_0048-1200.webp"
-                srcset="
-                  /assets/photos/used/optimized/211014_PLC_0048-360.webp   360w,
-                  /assets/photos/used/optimized/211014_PLC_0048-540.webp   540w,
-                  /assets/photos/used/optimized/211014_PLC_0048-720.webp   720w,
-                  /assets/photos/used/optimized/211014_PLC_0048-960.webp   960w,
-                  /assets/photos/used/optimized/211014_PLC_0048-1200.webp 1200w,
-                  /assets/photos/used/optimized/211014_PLC_0048-1440.webp 1440w,
-                  /assets/photos/used/optimized/211014_PLC_0048-1800.webp 1800w,
-                  /assets/photos/used/optimized/211014_PLC_0048-2400.webp 2400w
-                "
-              />
-            </div>
-            <a
-              href="/#olivier"
-              class="olivier button"
-              aria-label="En voir davantages de la chambre Olivier"
-            >
-              EN SAVOIR PLUS
-              <img
-                class="arrow-right"
-                src="/assets/icons/arrow-right.svg"
-                alt=""
-              />
-            </a>
           </div>
           <div class="image">
             <img
@@ -206,51 +202,53 @@
 
       <section class="section" id="oranger">
         <div class="room-details">
-          <div class="room-card">
-            <div class="content">
-              <div class="title">
+          <div class="room-card-wrapper">
+            <div class="room-card">
+              <div class="content">
+                <div class="title">
+                  <img
+                    src="/assets/icons/orange.svg"
+                    style="aspect-ratio: 35/24"
+                    alt=""
+                  />
+                  <h2>l'oranger</h2>
+                  <div class="line oranger"></div>
+                </div>
+                <p class="infos">
+                  <strong>80€/nuit pour 1 à 2 personnes</strong><br />
+                  (petit déjeuner compris)<br />
+                  +15€ par personne supplémentaire
+                </p>
+              </div>
+              <div class="inside-image">
                 <img
-                  src="/assets/icons/orange.svg"
-                  style="aspect-ratio: 35/24"
+                  alt="Chambre Oranger"
+                  src="/assets/photos/used/optimized/211014_PLC_0088-1200.webp"
+                  srcset="
+                    /assets/photos/used/optimized/211014_PLC_0088-360.webp   360w,
+                    /assets/photos/used/optimized/211014_PLC_0088-540.webp   540w,
+                    /assets/photos/used/optimized/211014_PLC_0088-720.webp   720w,
+                    /assets/photos/used/optimized/211014_PLC_0088-960.webp   960w,
+                    /assets/photos/used/optimized/211014_PLC_0088-1200.webp 1200w,
+                    /assets/photos/used/optimized/211014_PLC_0088-1440.webp 1440w,
+                    /assets/photos/used/optimized/211014_PLC_0088-1800.webp 1800w,
+                    /assets/photos/used/optimized/211014_PLC_0088-2400.webp 2400w
+                  "
+                />
+              </div>
+              <a
+                href="/#oranger"
+                class="oranger button"
+                aria-label="En voir davantages de la chambre Oranger"
+              >
+                EN SAVOIR PLUS
+                <img
+                  class="arrow-right"
+                  src="/assets/icons/arrow-right.svg"
                   alt=""
                 />
-                <h2>l'oranger</h2>
-                <div class="line oranger"></div>
-              </div>
-              <p class="infos">
-                <strong>80€/nuit pour 1 à 2 personnes</strong><br />
-                (petit déjeuner compris)<br />
-                +15€ par personne supplémentaire
-              </p>
+              </a>
             </div>
-            <div class="inside-image">
-              <img
-                alt="Chambre Oranger"
-                src="/assets/photos/used/optimized/211014_PLC_0088-1200.webp"
-                srcset="
-                  /assets/photos/used/optimized/211014_PLC_0088-360.webp   360w,
-                  /assets/photos/used/optimized/211014_PLC_0088-540.webp   540w,
-                  /assets/photos/used/optimized/211014_PLC_0088-720.webp   720w,
-                  /assets/photos/used/optimized/211014_PLC_0088-960.webp   960w,
-                  /assets/photos/used/optimized/211014_PLC_0088-1200.webp 1200w,
-                  /assets/photos/used/optimized/211014_PLC_0088-1440.webp 1440w,
-                  /assets/photos/used/optimized/211014_PLC_0088-1800.webp 1800w,
-                  /assets/photos/used/optimized/211014_PLC_0088-2400.webp 2400w
-                "
-              />
-            </div>
-            <a
-              href="/#oranger"
-              class="oranger button"
-              aria-label="En voir davantages de la chambre Oranger"
-            >
-              EN SAVOIR PLUS
-              <img
-                class="arrow-right"
-                src="/assets/icons/arrow-right.svg"
-                alt=""
-              />
-            </a>
           </div>
           <div class="image">
             <img
