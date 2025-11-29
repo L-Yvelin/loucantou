@@ -21,7 +21,8 @@
 @font-face {
   font-family: "Rounded Mplus 1c";
   src: local("Rounded Mplus 1c Thin"), local("RoundedMplus1c-Thin"),
-    url("/assets/fonts/RoundedMPlus-Latin/RoundedMplus1c-Thin.woff2") format("woff2");
+    url("/assets/fonts/RoundedMPlus-Latin/RoundedMplus1c-Thin.woff2")
+      format("woff2");
   font-weight: 100;
   font-style: normal;
   font-display: fallback;
@@ -30,7 +31,8 @@
 @font-face {
   font-family: "Rounded Mplus 1c";
   src: local("Rounded Mplus 1c Black"), local("RoundedMplus1c-Black"),
-    url("/assets/fonts/RoundedMPlus-Latin/RoundedMplus1c-Black.woff2") format("woff2");
+    url("/assets/fonts/RoundedMPlus-Latin/RoundedMplus1c-Black.woff2")
+      format("woff2");
   font-weight: 900;
   font-style: normal;
   font-display: fallback;
@@ -39,7 +41,8 @@
 @font-face {
   font-family: "Rounded Mplus 1c";
   src: local("Rounded Mplus 1c Light"), local("RoundedMplus1c-Light"),
-    url("/assets/fonts/RoundedMPlus-Latin/RoundedMplus1c-Light.woff2") format("woff2");
+    url("/assets/fonts/RoundedMPlus-Latin/RoundedMplus1c-Light.woff2")
+      format("woff2");
   font-weight: 300;
   font-style: normal;
   font-display: fallback;
@@ -58,7 +61,8 @@
 @font-face {
   font-family: "Rounded Mplus 1c";
   src: local("Rounded Mplus 1c Bold"), local("RoundedMplus1c-Bold"),
-    url("/assets/fonts/RoundedMPlus-Latin/RoundedMplus1c-Bold.woff2") format("woff2");
+    url("/assets/fonts/RoundedMPlus-Latin/RoundedMplus1c-Bold.woff2")
+      format("woff2");
   font-weight: bold;
   font-style: normal;
   font-display: fallback;
@@ -312,6 +316,11 @@ p br {
   border-radius: 9999px;
 }
 
+.room-card-wrapper {
+  display: flex;
+  flex: 1;
+}
+
 .room-card {
   padding: 40px;
   box-sizing: border-box;
@@ -493,11 +502,8 @@ footer .separator {
 }
 
 .page-indicator .multiline span:not(:first-child) {
-  margin-left: 59%;
-}
-
-.page-indicator .multiline span:first-child {
-  margin-right: 3em;
+  display: inline-block;
+  text-align: right;
 }
 
 #reserver #oranger .room-details {
@@ -571,6 +577,7 @@ footer .separator {
 .room-details .image,
 .formulaire .image {
   flex: 2;
+  width: calc((2 / 3 * 100vw) - 20px - var(--side-padding) * 2);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;

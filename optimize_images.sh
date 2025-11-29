@@ -80,7 +80,7 @@ while IFS= read -r -d $'\0' img; do
         
         if [ ! -f "$dest_file" ]; then
             echo "Converting: ${rel_path} -> ${res}w WebP"
-            if ! convert "$real_path" -resize "${res}x" -quality 85 -define webp:lossless=false -strip "$dest_file"; then
+            if ! convert "$real_path" -resize "${res}x" -quality 80 -define webp:lossless=false -strip "$dest_file"; then
                 echo "Error: Failed to convert $real_path"
                 rm -f "$dest_file" 2>/dev/null
                 continue
@@ -90,7 +90,7 @@ while IFS= read -r -d $'\0' img; do
             echo "Skipping existing: ${dest_file}"
         fi
     done
-done < <(find -L "$SOURCE_DIR" -type f \( "${find_args[@]}" \) -print0)
+done < <(find -L "$SOURCE_DIR" -path "$OPT_DIR" -prune -o -type f \( "${find_args[@]}" \) -print0)
 
 echo ""
 echo "Optimization complete!"
